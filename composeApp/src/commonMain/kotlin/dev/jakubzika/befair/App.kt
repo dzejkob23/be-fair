@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,6 +19,9 @@ import androidx.compose.ui.Modifier
 import be_fair.composeapp.generated.resources.Res
 import be_fair.composeapp.generated.resources.compose_multiplatform
 import dev.jakubzika.befair.ui.atoms.BeFairTheme
+import dev.jakubzika.befair.ui.atoms.EmailInputField
+import dev.jakubzika.befair.ui.atoms.PasswordInputField
+import dev.jakubzika.befair.ui.atoms.PrimaryButton
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -30,14 +32,20 @@ fun App() {
         var showContent by remember { mutableStateOf(false) }
         Column(
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.primaryContainer)
+                .background(MaterialTheme.colorScheme.background)
                 .safeContentPadding()
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Button(onClick = { showContent = !showContent }) {
-                Text("Click me!")
-            }
+            EmailInputField(
+                value = "",
+                onValueChange = {},
+            )
+            PasswordInputField(
+                value = "",
+                onValueChange = {},
+            )
+            PrimaryButton(title = "Click me!", onClick = { showContent = !showContent })
             AnimatedVisibility(showContent) {
                 val greeting = remember { Greeting().greet() }
                 Column(
