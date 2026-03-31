@@ -1,56 +1,98 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for AI agents working in this repository.
 
-## Project Overview
+## Read This First
 
-Be-Fair is a Kotlin Multiplatform (KMP) project targeting Android, iOS, and a Ktor backend server. The UI layer uses Compose Multiplatform with Material3. Package name: `dev.jakubzika.befair`.
+1. Read [`README.md`](./README.md) for human-oriented product and project context.
+2. Use this file for implementation rules, architecture constraints, and safe edit workflow.
 
-## Build & Run Commands
+## Project Snapshot
+
+- Project: **Be-Fair**
+- Package: `dev.jakubzika.befair`
+- Stack: Kotlin Multiplatform, Compose Multiplatform (Material 3), Ktor server
+- Targets: Android, iOS, JVM server
+
+## Modules and Ownership
+
+Defined in `settings.gradle.kts`:
+
+- `androidApp` - Android application entry point; depends on `composeApp` and `shared`.
+- `composeApp` - shared Compose UI module for Android and iOS.
+- `iosApp` - iOS application entry point; depends on `composeApp` and `shared`.
+- `shared` - shared domain/utility logic for Android, iOS, and JVM.
+- `server` - Ktor server module (Netty); depends on `shared`.
+
+## Source Set Rules
+
+- Prefer `commonMain` for cross-platform logic.
+- Put platform APIs into `androidMain`, `iosMain`, or `jvmMain`.
+- Use Kotlin `expect`/`actual` for platform abstractions.
+- Keep tests in `commonTest` when behavior is shared.
+
+## UI Architecture (composeApp)
+
+UI code is under `composeApp/src/commonMain/kotlin/dev/jakubzika/befair/ui/` and follows atomic design:
+
+- `atoms/` - basic reusable UI pieces (`Button`, `InputField`, `Theme`, etc.).
+- `molecules/` - small composed components (planned/expanding).
+- `organisms/` - larger composed sections (planned/expanding).
+- `templates/` - screen layout templates (for example `LoginTemplate`).
+- `screens/` - complete screens (`LoginScreen`, `HomeScreen`, etc.).
+
+When editing UI, preserve this structure and place new components at the lowest suitable layer.
+
+## Dependency Injection
+
+Project does not use any kind of dependency injection framework. It uses own dependency container
+with the main component instances creation (`shared/src/commonMain/kotlin/dev/jakubzika/befair/di/AppContainer.kt`).
+
+## Build, Run, and Test Commands
 
 ```shell
 # Android
 ./gradlew :androidApp:assembleDebug
 
-# Server (Ktor on Netty, port 8080)
+# Server (Ktor on Netty)
 ./gradlew :server:run
 
-# iOS — open iosApp/ in Xcode and run from there
+# iOS
+# Open iosApp/ in Xcode and run from Xcode
 
-# Run all tests
+# All tests
 ./gradlew test
 
-# Run tests per module
+# Module tests
 ./gradlew :composeApp:testDebugUnitTest
 ./gradlew :server:test
 ./gradlew :shared:testDebugUnitTest
 ```
 
-## Architecture
+## Version and Dependency Source of Truth
 
-Four Gradle modules (`settings.gradle.kts`):
+Use `gradle/libs.versions.toml` for versions and plugin aliases.
 
-- **androidApp** — Android application entry point (`MainActivity`, manifest, resources). Depends on `composeApp`.
-- **composeApp** — Compose Multiplatform UI library (Android + iOS). Contains all screens and the design system. Uses `com.android.kotlin.multiplatform.library` plugin.
-- **shared** — Pure Kotlin library shared across all targets (Android, iOS, JVM). Houses platform abstractions (`expect`/`actual` for `Platform`), constants, and shared logic. Uses `com.android.kotlin.multiplatform.library` plugin.
-- **server** — Ktor server application (JVM/Netty). Depends on `shared`.
+Current key versions:
+- Kotlin `2.3.0`
+- Compose Multiplatform `1.9.3`
+- Ktor `3.3.3`
+- AGP `9.0.1`
+- Android `compileSdk 36`, `minSdk 24`, `targetSdk 36`
 
-### Multiplatform Source Sets
+## Agent Workflow Expectations
 
-Each module uses KMP source sets: `commonMain`, `androidMain`, `iosMain`, `jvmMain`, plus `commonTest` for shared tests. Platform-specific code uses Kotlin `expect`/`actual` declarations.
+- Make minimal, targeted edits; avoid unrelated refactors.
+- Do not modify generated/build output directories.
+- Keep module boundaries intact (UI in `composeApp`, shared logic in `shared`, backend in `server`).
+- Validate changed behavior with the smallest relevant test task when possible.
+- If requirements are ambiguous, state assumptions briefly in your response.
 
-### UI — Atomic Design in composeApp
+## Safe Change Checklist
 
-UI components live under `composeApp/src/commonMain/kotlin/dev/jakubzika/befair/ui/` and follow atomic design:
+Before finishing, verify:
 
-- **atoms/** — Primitive components: `Button.kt` (PrimaryButton, ActionButton), `InputField.kt` (EmailInputField, PasswordInputField), `Color.kt`, `Theme.kt`, `Type.kt`, `Dimension.kt`
-- **molecules/** — Composite components (planned)
-- **organisms/** — Complex composed sections (planned)
-- **templates/** — Page layout templates (e.g., `LoginTemplate`)
-- **screens/** — Full screens: `LoginScreen`, `HomeScreen`, `RegistrationScreen`, `ItemDetailScreen`, `NewItemScreen`, `StatisticsScreen`
-
-### Key Tech Versions
-
-Managed centrally in `gradle/libs.versions.toml`:
-- Kotlin 2.3.0, Compose Multiplatform 1.9.3, Ktor 3.3.3, AGP 9.0.1, Gradle 9.3.1
-- Android: compileSdk 36, minSdk 24, JVM target 11
+1. Code is in the correct module and source set.
+2. Imports/dependencies align with existing version catalog usage.
+3. Relevant tests/build commands pass for touched modules.
+4. Documentation is updated when behavior or workflow changes.
