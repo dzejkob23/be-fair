@@ -74,7 +74,7 @@ with the main component instances creation (`shared/src/commonMain/kotlin/dev/ja
 Use `gradle/libs.versions.toml` for versions and plugin aliases.
 
 Current key versions:
-- Kotlin `2.3.0`
+- Kotlin `2.3.20`
 - Compose Multiplatform `1.9.3`
 - Ktor `3.3.3`
 - AGP `9.0.1`
