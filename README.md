@@ -1,71 +1,63 @@
 # Be-Fair
 
-Be-Fair is a Kotlin Multiplatform project with three runtime targets:
-- Android app
-- iOS app
-- Ktor backend server
+Be-Fair is a cross-platform application for fair expense sharing among groups, like roommates, friends on a trip, or couples. It helps track who paid for what and calculates who owes whom, ensuring transparency and fairness.
 
-The shared UI is built with Compose Multiplatform (Material 3), and shared business logic lives in Kotlin Multiplatform modules.
+## Key Features (Planned)
+
+- **Group Management:** Create and join groups with a simple code or invite.
+- **Expense Logging:** Quickly add expenses with a description, amount, and payer.
+- **Split Customization:** Split expenses equally or by specific amounts/percentages.
+- **Real-time Sync:** All data is synced across devices via a centralized backend.
+- **Settlement Suggestions:** Automated advice on the most efficient way to settle debts.
+
+## Tech Stack
+
+- **Frontend:** [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/) (Android, iOS)
+- **Backend:** [Ktor](https://ktor.io/) (Kotlin-based server)
+- **Shared Logic:** Kotlin Multiplatform (KMP)
+- **Database:** (Planned) SQLDelight for local caching, PostgreSQL for backend.
 
 ## Project Structure
 
-- [`androidApp`](./androidApp) - Android entry app (`MainActivity`, Android manifest/resources).
-- [`composeApp`](./composeApp/src) - shared Compose UI for Android and iOS.
-- [`shared`](./shared/src) - shared Kotlin logic used by mobile and server modules.
-- [`server`](./server/src/main/kotlin) - Ktor server (Netty).
-- [`iosApp`](./iosApp) - Xcode project and iOS entry point.
+- `androidApp`: The entry point for the Android application.
+- `iosApp`: The entry point for the iOS application.
+- `composeApp`: Shared UI and navigation logic using Compose Multiplatform.
+- `shared`: Shared business logic, models, and networking.
+- `server`: The Ktor backend server.
 
-## Source Set Guide (KMP)
+## Getting Started
 
-Most modules follow Kotlin Multiplatform source sets:
-- `commonMain` - code shared by all targets.
-- `androidMain` - Android-only code.
-- `iosMain` - iOS-only code.
-- `jvmMain` - JVM-only code (mainly server/JVM scenarios).
-- `commonTest` - shared tests.
+### Prerequisites
 
-## Build and Run
+- Android Studio (latest stable or Ladybug+)
+- Xcode (for iOS development)
+- JDK 17 or higher
 
-### Android
+### Running the App
 
-```shell
-./gradlew :androidApp:assembleDebug
-```
+#### Android
+1. Open the project in Android Studio.
+2. Select the `androidApp` run configuration.
+3. Click "Run".
 
-### Server
+#### iOS
+1. Open `iosApp/iosApp.xcodeproj` in Xcode.
+2. Select a simulator or physical device.
+3. Click "Run".
 
-```shell
-./gradlew :server:run
-```
+#### Backend
+1. In Android Studio, select the `server` run configuration.
+2. Click "Run".
 
-### iOS
+## Development Rules
 
-Open [`iosApp`](./iosApp) in Xcode and run from Xcode.
+For AI agents and developers, please refer to [AGENTS.md](./AGENTS.md) for detailed architecture, module ownership, and safe-edit guidelines.
 
-## Testing
+---
 
-Run all tests:
+### Current Status & Versions
 
-```shell
-./gradlew test
-```
-
-Run tests by module:
-
-```shell
-./gradlew :composeApp:testDebugUnitTest
-./gradlew :server:test
-./gradlew :shared:testDebugUnitTest
-```
-
-## Tech Snapshot
-
-- Kotlin `2.3.0`
-- Compose Multiplatform `1.9.3`
-- Ktor `3.3.3`
-- Android Gradle Plugin `9.0.1`
-- Android compileSdk `36`, minSdk `24`
-
-## For AI Agent Context
-
-If you are working with an AI coding agent, see [`AGENTS.md`](./AGENTS.md) for repository-specific implementation guidance.
+- **Kotlin:** `2.3.20`
+- **Compose Multiplatform:** `1.9.3`
+- **Ktor:** `3.3.3`
+- **Target Android SDK:** 36
