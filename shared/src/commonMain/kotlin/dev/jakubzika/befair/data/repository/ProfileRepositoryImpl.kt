@@ -22,8 +22,8 @@ class ProfileRepositoryImpl(private val httpClient: HttpClient) : ProfileReposit
         }
         _profile.value = UserProfile(
             id = userId,
-            displayName = "Jane Doe",
-            email = "jane@example.com",
+            displayName = "John Doe",
+            email = "john@example.com",
             avatarUrl = null,
         )
     }
