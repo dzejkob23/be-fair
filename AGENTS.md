@@ -33,13 +33,13 @@ Defined in `settings.gradle.kts`:
 
 ## UI Architecture (composeApp)
 
-UI code is under `composeApp/src/commonMain/kotlin/dev/jakubzika/befair/ui/` and follows atomic design:
+UI code is under `composeApp/src/commonMain/kotlin/dev/jakubzika/befair/ui/` and follows [atomic design](https://atomicdesign.bradfrost.com/chapter-2/):
 
-- `atoms/` - basic reusable UI pieces (`Button`, `InputField`, `Theme`, etc.).
-- `molecules/` - small composed components (planned/expanding).
-- `organisms/` - larger composed sections (planned/expanding).
-- `templates/` - screen layout templates (for example `LoginTemplate`).
-- `screens/` - complete screens (`LoginScreen`, `HomeScreen`, etc.).
+- `atoms/` - Basic reusable UI pieces (`Button`, `Colors`, `Theme`, `Title`, etc.). Those components are unique.
+- `molecules/` - Are relatively simple groups of `atoms` functioning together as a unit.
+- `organisms/` - Are relatively complex UI components composed of groups of `molecules` and/or `atoms` and/or other `organisms`.
+- `templates/` - Templates are page-level objects that place components into a layout and articulate the design’s underlying content structure. It's a combination of `atoms`, `molecules`, and `organisms` (for example `LoginTemplate`).
+- `screens/` - Pages are specific instances of templates that show what a UI looks like with real representative content in place. Displays `template` and fills it by data (for example `LoginScreen`, `HomeScreen`, etc.).
 
 When editing UI, preserve this structure and place new components at the lowest suitable layer.
 
