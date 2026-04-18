@@ -18,10 +18,11 @@ Guidance for AI agents working in this repository.
 
 Defined in `settings.gradle.kts`:
 
-- `androidApp` - Android application entry point; depends on `composeApp` and `shared`.
-- `composeApp` - shared Compose UI module for Android and iOS.
-- `iosApp` - iOS application entry point; depends on `composeApp` and `shared`.
-- `shared` - shared domain/utility logic for Android, iOS, and JVM.
+- `composeApp` - shared Compose UI module for Android and iOS; dependes on `sharedMobile` and `shared`.
+- `androidApp` - Android application entry point; depends on `composeApp`.
+- `iosApp` - iOS application entry point; depends on `composeApp`.
+- `sharedMobile` - shared domain, data, and model layer for mobile platforms (Android & iOS) only.
+- `shared` - shared domain, data, and model layer for all platforms (Android, iOS, and JVM).
 - `server` - Ktor server module (Netty); depends on `shared`.
 
 ## Source Set Rules
@@ -42,6 +43,23 @@ UI code is under `composeApp/src/commonMain/kotlin/dev/jakubzika/befair/ui/` and
 - `screens/` - Pages are specific instances of templates that show what a UI looks like with real representative content in place. Displays `template` and fills it by data (for example `LoginScreen`, `HomeScreen`, etc.).
 
 When editing UI, preserve this structure and place new components at the lowest suitable layer.
+
+## Software Architecture
+Follow [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) rules:
+- Domain layer represented by `shared` module by `domain` folder. Defines cross-platform use-cases which represents business logic.
+- Data layer represented by `shared` module by `data` folder. Defines cross-platform repositories and controllers.
+- Model layer represented by `shared` module by `model` folder. Defines cross-platform model classes sharable through layers.
+
+### Mobile Architecture
+- Presentation layer represented by `composeApp` module. Definition of UI components, and screen navigation.
+- Domain layer for mobile platform represented by `sharedMobile` module by `domain` folder. Defines use-cases which represents business logic.
+- Data layer for mobile platform represented by `sharedMobile` module by `data` folder. Defines repositories and controllers.
+- Model layer for mobile platform represented by `sharedMobile` module by `model` folder. Defines model classes sharable through layers.
+
+### Server Architecture
+- Domain layer for mobile platform represented by `sharedMobile` module by `domain` folder. Defines server only related use-cases which represents business logic.
+- Data layer for mobile platform represented by `sharedMobile` module by `data` folder. Defines server only related repositories and controllers.
+- Model layer for mobile platform represented by `sharedMobile` module by `model` folder. Defines server only related model classes sharable through layers.
 
 ## Dependency Injection
 
@@ -72,13 +90,6 @@ with the main component instances creation (`shared/src/commonMain/kotlin/dev/ja
 ## Version and Dependency Source of Truth
 
 Use `gradle/libs.versions.toml` for versions and plugin aliases.
-
-Current key versions:
-- Kotlin `2.3.20`
-- Compose Multiplatform `1.9.3`
-- Ktor `3.3.3`
-- AGP `9.0.1`
-- Android `compileSdk 36`, `minSdk 24`, `targetSdk 36`
 
 ## Agent Workflow Expectations
 
