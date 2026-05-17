@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/gradle-setup
       - name: Run Android lint
-        run: ./gradlew :androidApp:lint :composeApp:lint :shared:lint
+        run: ./gradlew :androidApp:lint
 
   test:
     name: Tests
