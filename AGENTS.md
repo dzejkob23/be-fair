@@ -21,8 +21,8 @@ Defined in `settings.gradle.kts`:
 - `composeApp` - shared Compose UI module for Android and iOS; dependes on `sharedMobile` and `shared`.
 - `androidApp` - Android application entry point; depends on `composeApp`.
 - `iosApp` - iOS application entry point; depends on `composeApp`.
-- `sharedMobile` - shared domain, data, and model layer for mobile platforms (Android & iOS) only.
-- `shared` - shared domain, data, and model layer for all platforms (Android, iOS, and JVM).
+- `sharedMobile` - shared domain, data, and model layer for mobile platforms only (Android & iOS) only; depends on `shared`.
+- `shared` - shared domain, data, and model layer common for all platforms (Android, iOS, and JVM).
 - `server` - Ktor server module (Netty); depends on `shared`.
 
 ## Source Set Rules
@@ -32,7 +32,29 @@ Defined in `settings.gradle.kts`:
 - Use Kotlin `expect`/`actual` for platform abstractions.
 - Keep tests in `commonTest` when behavior is shared.
 
-## UI Architecture (composeApp)
+## Software Architecture
+
+### General
+Follow [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) rules.
+
+Graphical representation module dependencies:
+```mermaid
+flowchart
+    androidApp --> composeApp
+    iosApp --> composeApp
+    composeApp --> shared
+    composeApp --> sharedMobile
+    server --> shared
+    sharedMobile --> shared
+```
+
+### Mobile Architecture
+- Presentation layer represented by `composeApp` module. Definition colors, theming, components, screen navigation, and follows [UI Architecture](#ui-architecture-composeapp).
+- Domain layer for mobile platform represented by `sharedMobile` module by `domain` folder. Defines use-cases which represents business logic.
+- Data layer for mobile platform represented by `sharedMobile` module by `data` folder. Defines repositories and controllers.
+- Model layer for mobile platform represented by `sharedMobile` module by `model` folder. Defines model classes sharable through layers.
+
+#### UI Architecture (composeApp)
 
 UI code is under `composeApp/src/commonMain/kotlin/dev/jakubzika/befair/ui/` and follows [atomic design](https://atomicdesign.bradfrost.com/chapter-2/):
 
@@ -44,22 +66,9 @@ UI code is under `composeApp/src/commonMain/kotlin/dev/jakubzika/befair/ui/` and
 
 When editing UI, preserve this structure and place new components at the lowest suitable layer.
 
-## Software Architecture
-Follow [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) rules:
-- Domain layer represented by `shared` module by `domain` folder. Defines cross-platform use-cases which represents business logic.
-- Data layer represented by `shared` module by `data` folder. Defines cross-platform repositories and controllers.
-- Model layer represented by `shared` module by `model` folder. Defines cross-platform model classes sharable through layers.
-
-### Mobile Architecture
-- Presentation layer represented by `composeApp` module. Definition of UI components, and screen navigation.
-- Domain layer for mobile platform represented by `sharedMobile` module by `domain` folder. Defines use-cases which represents business logic.
-- Data layer for mobile platform represented by `sharedMobile` module by `data` folder. Defines repositories and controllers.
-- Model layer for mobile platform represented by `sharedMobile` module by `model` folder. Defines model classes sharable through layers.
-
 ### Server Architecture
-- Domain layer for mobile platform represented by `sharedMobile` module by `domain` folder. Defines server only related use-cases which represents business logic.
-- Data layer for mobile platform represented by `sharedMobile` module by `data` folder. Defines server only related repositories and controllers.
-- Model layer for mobile platform represented by `sharedMobile` module by `model` folder. Defines server only related model classes sharable through layers.
+- All server only implementation is represented by `server` module.
+- If there is something shared with mobile platform, it is placed in `shared` module.
 
 ## Dependency Injection
 
@@ -95,7 +104,7 @@ Use `gradle/libs.versions.toml` for versions and plugin aliases.
 
 - Make minimal, targeted edits; avoid unrelated refactors.
 - Do not modify generated/build output directories.
-- Keep module boundaries intact (UI in `composeApp`, shared logic in `shared`, backend in `server`).
+- Keep module boundaries intact (UI in `composeApp`, mobile only shared logic in `sharedMobile`, shared logic for all platforms in `shared`, backend in `server`).
 - Validate changed behavior with the smallest relevant test task when possible.
 - If requirements are ambiguous, state assumptions briefly in your response.
 
