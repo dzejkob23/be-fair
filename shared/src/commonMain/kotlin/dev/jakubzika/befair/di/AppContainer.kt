@@ -1,9 +1,6 @@
 package dev.jakubzika.befair.di
 
 import dev.jakubzika.befair.data.network.createHttpClient
-import dev.jakubzika.befair.data.repository.ProfileRepositoryImpl
-import dev.jakubzika.befair.domain.repository.ProfileRepository
-import dev.jakubzika.befair.domain.usecase.GetProfileUseCase
 import io.ktor.client.HttpClient
 
 /**
@@ -14,15 +11,4 @@ class AppContainer {
 
     // Network client
     val httpClient: HttpClient by lazy { createHttpClient() }
-
-    /*********************************************/
-    /************** Repositories *****************/
-    /*********************************************/
-    val profileRepository: ProfileRepository by lazy { ProfileRepositoryImpl(httpClient) }
-
-
-    /*********************************************/
-    /**************** Use Cases ******************/
-    /*********************************************/
-    val getProfileUseCase: GetProfileUseCase get() = GetProfileUseCase(profileRepository)
 }

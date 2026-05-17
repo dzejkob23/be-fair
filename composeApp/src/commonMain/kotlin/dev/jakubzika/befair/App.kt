@@ -19,7 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import be_fair.composeapp.generated.resources.Res
 import be_fair.composeapp.generated.resources.compose_multiplatform
-import dev.jakubzika.befair.di.AppContainer
+import dev.jakubzika.befair.di.MobileAppContainer
 import dev.jakubzika.befair.ui.LocalAppContainer
 import dev.jakubzika.befair.ui.atoms.BeFairTheme
 import dev.jakubzika.befair.ui.atoms.EmailInputField
@@ -32,7 +32,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Preview
 fun App() {
     // DI container initialization
-    val appContainer = remember { AppContainer() }
+    val appContainer = remember { MobileAppContainer() }
     CompositionLocalProvider(LocalAppContainer provides appContainer) {
         // General app theme
         BeFairTheme {
