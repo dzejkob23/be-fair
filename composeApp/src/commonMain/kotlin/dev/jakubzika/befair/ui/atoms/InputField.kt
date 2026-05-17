@@ -265,8 +265,8 @@ private fun EyeIcon(
 
         val path = Path().apply {
             moveTo(w * 0.1f, h / 2)
-            quadraticBezierTo(w / 2, h * 0.15f, w * 0.9f, h / 2)
-            quadraticBezierTo(w / 2, h * 0.85f, w * 0.1f, h / 2)
+            quadraticTo(w / 2, h * 0.15f, w * 0.9f, h / 2)
+            quadraticTo(w / 2, h * 0.85f, w * 0.1f, h / 2)
             close()
         }
 
