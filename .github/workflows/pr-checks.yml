@@ -31,7 +31,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/gradle-setup
       - name: Run unit tests
-        run: ./gradlew :composeApp:testDebugUnitTest :shared:testDebugUnitTest :server:test
+        run: ./gradlew :shared:jvmTest :server:test
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -61,6 +61,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/gradle-setup
+      - name: Run iOS unit tests
+        run: ./gradlew :composeApp:iosSimulatorArm64Test :shared:iosSimulatorArm64Test
       - name: Build iOS app (simulator)
         run: |
           xcodebuild build \
