@@ -54,18 +54,6 @@ flowchart
 - Data layer for mobile platform represented by `sharedMobile` module by `data` folder. Defines repositories and controllers.
 - Model layer for mobile platform represented by `sharedMobile` module by `model` folder. Defines model classes sharable through layers.
 
-#### UI Architecture (composeApp)
-
-UI code is under `composeApp/src/commonMain/kotlin/dev/jakubzika/befair/ui/` and follows [atomic design](https://atomicdesign.bradfrost.com/chapter-2/):
-
-- `atoms/` - Basic reusable UI pieces (`Button`, `Colors`, `Theme`, `Title`, etc.). Those components are unique.
-- `molecules/` - Are relatively simple groups of `atoms` functioning together as a unit.
-- `organisms/` - Are relatively complex UI components composed of groups of `molecules` and/or `atoms` and/or other `organisms`.
-- `templates/` - Templates are page-level objects that place components into a layout and articulate the design’s underlying content structure. It's a combination of `atoms`, `molecules`, and `organisms` (for example `LoginTemplate`).
-- `screens/` - Pages are specific instances of templates that show what a UI looks like with real representative content in place. Displays `template` and fills it by data (for example `LoginScreen`, `HomeScreen`, etc.).
-
-When editing UI, preserve this structure and place new components at the lowest suitable layer.
-
 ### Server Architecture
 - All server only implementation is represented by `server` module.
 - If there is something shared with mobile platform, it is placed in `shared` module.
