@@ -96,11 +96,7 @@ do not adapt between light and dark mode per M3 specification.
 
 ### Type Scale
 
-Font family: **Inter** (design intent). Current implementation uses `FontFamily.Default`
-(Roboto on Android, SF Pro on iOS) until Inter font files are bundled.
-
-To add Inter: add `.ttf` files to `composeApp/src/commonMain/composeResources/font/`, declare
-via `Font()` + `FontFamily()`, then replace `FontFamily.Default` in `Type.kt`.
+Font family: **Inter**, loaded from `composeApp/src/commonMain/composeResources/font/` via compose resources.
 
 | M3 Role | Size | Line Height | Weight | Tracking | Stitch Name |
 |---|---|---|---|---|---|
