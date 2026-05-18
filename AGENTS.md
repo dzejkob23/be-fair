@@ -116,3 +116,11 @@ Before finishing, verify:
 2. Imports/dependencies align with existing version catalog usage.
 3. Relevant tests/build commands pass for touched modules.
 4. Documentation is updated when behavior or workflow changes.
+
+## Design System
+
+See [`DESIGN.md § 8`](./DESIGN.md#8-design-system-implementation) for the full color palette,
+type scale, spacing tokens, and component patterns.
+
+Key rule: always access colors via `MaterialTheme.colorScheme.*` and typography via
+`MaterialTheme.typography.*`. Never hard-code hex values in composables.
