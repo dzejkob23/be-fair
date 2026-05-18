@@ -1,31 +1,11 @@
 package dev.jakubzika.befair
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import be_fair.composeapp.generated.resources.Res
-import be_fair.composeapp.generated.resources.compose_multiplatform
 import dev.jakubzika.befair.di.MobileAppContainer
 import dev.jakubzika.befair.ui.LocalAppContainer
 import dev.jakubzika.befair.ui.atoms.BeFairTheme
-import dev.jakubzika.befair.ui.atoms.EmailInputField
-import dev.jakubzika.befair.ui.atoms.PasswordInputField
-import dev.jakubzika.befair.ui.atoms.PrimaryButton
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -36,34 +16,7 @@ fun App() {
     CompositionLocalProvider(LocalAppContainer provides appContainer) {
         // General app theme
         BeFairTheme {
-            var showContent by remember { mutableStateOf(false) }
-            Column(
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.background)
-                    .safeContentPadding()
-                    .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                EmailInputField(
-                    value = "",
-                    onValueChange = {},
-                )
-                PasswordInputField(
-                    value = "",
-                    onValueChange = {},
-                )
-                PrimaryButton(title = "Click me!", onClick = { showContent = !showContent })
-                AnimatedVisibility(showContent) {
-                    val greeting = remember { Greeting().greet() }
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Image(painterResource(Res.drawable.compose_multiplatform), null)
-                        Text("Compose: $greeting")
-                    }
-                }
-            }
+            // TBD
         }
     }
 }
