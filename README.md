@@ -17,10 +17,10 @@ Be-Fair is application that allows you to track cost-effectiveness of your wared
 
 ## Project Structure
 
-- `androidApp`: The entry point for the Android application.
-- `iosApp`: The entry point for the iOS application.
-- `composeApp`: Shared UI and navigation logic using Compose Multiplatform.
-- `shared`: Shared business logic, models, and networking.
+- `app/androidApp`: The entry point for the Android application.
+- `app/iosApp`: The entry point for the iOS application.
+- `app/shared`: Shared UI, navigation, and mobile domain/data logic using Compose Multiplatform.
+- `core`: Shared business logic, models, and networking (all platforms).
 - `server`: The Ktor backend server.
 
 ## Getting Started
@@ -39,7 +39,7 @@ Be-Fair is application that allows you to track cost-effectiveness of your wared
 3. Click "Run".
 
 #### iOS
-1. Open `iosApp/iosApp.xcodeproj` in Xcode.
+1. Open `app/iosApp/iosApp.xcodeproj` in Xcode.
 2. Select a simulator or physical device.
 3. Click "Run".
 

@@ -18,12 +18,11 @@ Guidance for AI agents working in this repository.
 
 Defined in `settings.gradle.kts`:
 
-- `composeApp` - shared Compose UI module for Android and iOS; dependes on `sharedMobile` and `shared`.
-- `androidApp` - Android application entry point; depends on `composeApp`.
-- `iosApp` - iOS application entry point; depends on `composeApp`.
-- `sharedMobile` - shared domain, data, and model layer for mobile platforms only (Android & iOS) only; depends on `shared`.
-- `shared` - shared domain, data, and model layer common for all platforms (Android, iOS, and JVM).
-- `server` - Ktor server module (Netty); depends on `shared`.
+- `app/shared` - shared Compose UI module for Android and iOS; also contains mobile domain, data, and model layers; depends on `core`.
+- `app/androidApp` - Android application entry point; depends on `app/shared`.
+- `app/iosApp` - iOS application entry point; depends on `app/shared`.
+- `core` - shared domain, data, and model layer common for all platforms (Android, iOS, and JVM).
+- `server` - Ktor server module (Netty); depends on `core`.
 
 ## Source Set Rules
 
@@ -40,60 +39,58 @@ Follow [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the
 Graphical representation module dependencies:
 ```mermaid
 flowchart
-    androidApp --> composeApp
-    iosApp --> composeApp
-    composeApp --> shared
-    composeApp --> sharedMobile
-    server --> shared
-    sharedMobile --> shared
+    app/androidApp --> app/shared
+    app/iosApp --> app/shared
+    app/shared --> core
+    server --> core
 ```
 
 ### Mobile Architecture
-- Presentation layer represented by `composeApp` module. Definition colors, theming, components, screen navigation, and follows [UI Architecture](#ui-architecture-composeapp).
-- Domain layer for mobile platform represented by `sharedMobile` module by `domain` folder. Defines use-cases which represents business logic.
-- Data layer for mobile platform represented by `sharedMobile` module by `data` folder. Defines repositories and controllers.
-- Model layer for mobile platform represented by `sharedMobile` module by `model` folder. Defines model classes sharable through layers.
+- Presentation layer represented by `app/shared` module. Definition colors, theming, components, screen navigation, and follows [UI Architecture](#ui-architecture-appshared).
+- Domain layer for mobile platform represented by `app/shared` module by `domain` folder. Defines use-cases which represents business logic.
+- Data layer for mobile platform represented by `app/shared` module by `data` folder. Defines repositories and controllers.
+- Model layer for mobile platform represented by `app/shared` module by `model` folder. Defines model classes sharable through layers.
 
-#### UI Architecture (composeApp)
+#### UI Architecture (app/shared)
 
-UI code is under `composeApp/src/commonMain/kotlin/dev/jakubzika/befair/ui/` and follows [atomic design](https://atomicdesign.bradfrost.com/chapter-2/):
+UI code is under `app/shared/src/commonMain/kotlin/dev/jakubzika/befair/ui/` and follows [atomic design](https://atomicdesign.bradfrost.com/chapter-2/):
 
 - `atoms/` - Basic reusable UI pieces (`Button`, `Colors`, `Theme`, `Title`, etc.). Those components are unique.
 - `molecules/` - Are relatively simple groups of `atoms` functioning together as a unit.
 - `organisms/` - Are relatively complex UI components composed of groups of `molecules` and/or `atoms` and/or other `organisms`.
-- `templates/` - Templates are page-level objects that place components into a layout and articulate the design’s underlying content structure. It's a combination of `atoms`, `molecules`, and `organisms` (for example `LoginTemplate`).
+- `templates/` - Templates are page-level objects that place components into a layout and articulate the design's underlying content structure. It's a combination of `atoms`, `molecules`, and `organisms` (for example `LoginTemplate`).
 - `screens/` - Pages are specific instances of templates that show what a UI looks like with real representative content in place. Displays `template` and fills it by data (for example `LoginScreen`, `HomeScreen`, etc.).
 
 When editing UI, preserve this structure and place new components at the lowest suitable layer.
 
 ### Server Architecture
 - All server only implementation is represented by `server` module.
-- If there is something shared with mobile platform, it is placed in `shared` module.
+- If there is something shared with mobile platform, it is placed in `core` module.
 
 ## Dependency Injection
 
 Project does not use any kind of dependency injection framework. It uses own dependency container
-with the main component instances creation (`shared/src/commonMain/kotlin/dev/jakubzika/befair/di/AppContainer.kt`).
+with the main component instances creation (`core/src/commonMain/kotlin/dev/jakubzika/befair/di/AppContainer.kt`).
 
 ## Build, Run, and Test Commands
 
 ```shell
 # Android
-./gradlew :androidApp:assembleDebug
+./gradlew :app:androidApp:assembleDebug
 
 # Server (Ktor on Netty)
 ./gradlew :server:run
 
 # iOS
-# Open iosApp/ in Xcode and run from Xcode
+# Open app/iosApp/ in Xcode and run from Xcode
 
 # All tests
 ./gradlew test
 
 # Module tests
-./gradlew :composeApp:testDebugUnitTest
+./gradlew :app:shared:testDebugUnitTest
 ./gradlew :server:test
-./gradlew :shared:testDebugUnitTest
+./gradlew :core:testDebugUnitTest
 ```
 
 ## Version and Dependency Source of Truth
@@ -104,7 +101,7 @@ Use `gradle/libs.versions.toml` for versions and plugin aliases.
 
 - Make minimal, targeted edits; avoid unrelated refactors.
 - Do not modify generated/build output directories.
-- Keep module boundaries intact (UI in `composeApp`, mobile only shared logic in `sharedMobile`, shared logic for all platforms in `shared`, backend in `server`).
+- Keep module boundaries intact (UI and mobile domain/data in `app/shared`, shared logic for all platforms in `core`, backend in `server`).
 - Validate changed behavior with the smallest relevant test task when possible.
 - If requirements are ambiguous, state assumptions briefly in your response.
 

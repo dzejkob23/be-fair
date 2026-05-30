@@ -7,6 +7,10 @@ plugins {
     alias(libs.plugins.composeCompiler)
 }
 
+compose.resources {
+    packageOfResClass = "be_fair.composeapp.generated.resources"
+}
+
 kotlin {
     androidLibrary {
         namespace = "dev.jakubzika.befair.composeapp"
@@ -37,8 +41,9 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation(projects.shared)
-            implementation(projects.sharedMobile)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.ktor.client.core)
+            implementation(projects.core)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
