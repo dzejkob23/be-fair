@@ -51,18 +51,6 @@ flowchart
 - Data layer for mobile platform represented by `app/shared` module by `data` folder. Defines repositories and controllers.
 - Model layer for mobile platform represented by `app/shared` module by `model` folder. Defines model classes sharable through layers.
 
-#### UI Architecture (app/shared)
-
-UI code is under `app/shared/src/commonMain/kotlin/dev/jakubzika/befair/ui/` and follows [atomic design](https://atomicdesign.bradfrost.com/chapter-2/):
-
-- `atoms/` - Basic reusable UI pieces (`Button`, `Colors`, `Theme`, `Title`, etc.). Those components are unique.
-- `molecules/` - Are relatively simple groups of `atoms` functioning together as a unit.
-- `organisms/` - Are relatively complex UI components composed of groups of `molecules` and/or `atoms` and/or other `organisms`.
-- `templates/` - Templates are page-level objects that place components into a layout and articulate the design's underlying content structure. It's a combination of `atoms`, `molecules`, and `organisms` (for example `LoginTemplate`).
-- `screens/` - Pages are specific instances of templates that show what a UI looks like with real representative content in place. Displays `template` and fills it by data (for example `LoginScreen`, `HomeScreen`, etc.).
-
-When editing UI, preserve this structure and place new components at the lowest suitable layer.
-
 ### Server Architecture
 - All server only implementation is represented by `server` module.
 - If there is something shared with mobile platform, it is placed in `core` module.
@@ -113,3 +101,11 @@ Before finishing, verify:
 2. Imports/dependencies align with existing version catalog usage.
 3. Relevant tests/build commands pass for touched modules.
 4. Documentation is updated when behavior or workflow changes.
+
+## Design System
+
+See [`DESIGN.md § 8`](./DESIGN.md#8-design-system-implementation) for the full color palette,
+type scale, spacing tokens, and component patterns.
+
+Key rule: always access colors via `MaterialTheme.colorScheme.*` and typography via
+`MaterialTheme.typography.*`. Never hard-code hex values in composables.
