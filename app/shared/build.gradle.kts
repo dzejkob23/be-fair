@@ -8,7 +8,7 @@ plugins {
 }
 
 compose.resources {
-    packageOfResClass = "be_fair.composeapp.generated.resources"
+    packageOfResClass = "be_fair.app.shared.generated.resources"
 }
 
 kotlin {

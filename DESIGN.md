@@ -48,7 +48,7 @@
 
 The BeFair design system is a Material Design 3 implementation with a custom teal-based color palette
 derived from Stitch design tokens. All tokens live under
-`composeApp/src/commonMain/kotlin/dev/jakubzika/befair/ui/atoms/`.
+`app/shared/src/commonMain/kotlin/dev/jakubzika/befair/ui/atoms/`.
 
 ### Color Palette (Teal — M3 Custom)
 
@@ -96,7 +96,7 @@ do not adapt between light and dark mode per M3 specification.
 
 ### Type Scale
 
-Font family: **Inter**, loaded from `composeApp/src/commonMain/composeResources/font/` via compose resources.
+Font family: **Inter**, loaded from `app/shared/src/commonMain/composeResources/font/` via compose resources.
 
 | M3 Role | Size | Line Height | Weight | Tracking | Stitch Name |
 |---|---|---|---|---|---|
