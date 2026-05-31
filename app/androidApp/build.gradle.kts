@@ -32,7 +32,7 @@ android {
 }
 
 dependencies {
-    implementation(projects.composeApp)
+    implementation(projects.app.shared)
     implementation(libs.androidx.activity.compose)
     debugImplementation(compose.uiTooling)
 }

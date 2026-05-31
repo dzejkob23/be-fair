@@ -7,9 +7,9 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import be_fair.composeapp.generated.resources.Res
-import be_fair.composeapp.generated.resources.font_inter
-import be_fair.composeapp.generated.resources.font_inter_italic
+import be_fair.app.shared.generated.resources.Res
+import be_fair.app.shared.generated.resources.font_inter
+import be_fair.app.shared.generated.resources.font_inter_italic
 import org.jetbrains.compose.resources.Font
 
 @Composable
