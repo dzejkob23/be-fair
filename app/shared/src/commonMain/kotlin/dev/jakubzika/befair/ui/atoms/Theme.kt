@@ -94,7 +94,7 @@ fun BeFairTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = BeFairTypography,
+        typography = BeFairTypography(),
         content = content
     )
 }
