@@ -2,9 +2,6 @@
 
 Guidance for AI agents working on UI components.
 
-# General
-The design component definition follows [atomic design](https://atomicdesign.bradfrost.com/chapter-2/)
-
 # Rules
 When editing UI, preserve this structure and place new components at the lowest suitable layer.
 
