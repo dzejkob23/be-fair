@@ -23,6 +23,10 @@ Be-Fair is application that allows you to track cost-effectiveness of your wared
 - `core`: Shared business logic, models, and networking (all platforms).
 - `server`: The Ktor backend server.
 
+## Software Architecture
+Follow [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) rules.
+The design component definition follows [atomic design](https://atomicdesign.bradfrost.com/chapter-2/)
+
 ## Getting Started
 
 ### Prerequisites
@@ -35,7 +39,7 @@ Be-Fair is application that allows you to track cost-effectiveness of your wared
 
 #### Android
 1. Open the project in Android Studio.
-2. Select the `androidApp` run configuration.
+2. Select the `app.androidApp` run configuration.
 3. Click "Run".
 
 #### iOS
@@ -44,8 +48,10 @@ Be-Fair is application that allows you to track cost-effectiveness of your wared
 3. Click "Run".
 
 #### Backend
-1. In Android Studio, select the `server` run configuration.
-2. Click "Run".
+1. Open Terminal app.
+2. Navigate to the project.
+3. Run command `./gradlew :server:run`.
+4. Open browser with URL `http://0.0.0.0:8080`.
 
 ## Development Rules
 

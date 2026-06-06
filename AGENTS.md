@@ -11,14 +11,24 @@ Guidance for AI agents working in this repository.
 
 - Project: **Be-Fair**
 - Package: `dev.jakubzika.befair`
-- Stack: Kotlin Multiplatform, Compose Multiplatform (Material 3), Ktor server
-- Targets: Android, iOS, JVM server
+- Targets:
+  - Android
+  - iOS
+  - JVM server
+- Tech Stack:
+    - Kotlin Multiplatform
+    - Backend
+      - Ktor server
+    - Mobile
+      - UI
+        - Compose Multiplatform (Material 3)
+        - Navigation 3
 
 ## Modules and Ownership
 
 Defined in `settings.gradle.kts`:
 
-- `app/shared` - shared Compose UI module for Android and iOS; also contains mobile domain, data, and model layers; depends on `core`.
+- `app/shared` - shared Compose UI module for mobile; also contains mobile domain, data, and model layers; depends on `core`.
 - `app/androidApp` - Android application entry point; depends on `app/shared`.
 - `app/iosApp` - iOS application entry point; depends on `app/shared`.
 - `core` - shared domain, data, and model layer common for all platforms (Android, iOS, and JVM).
@@ -33,11 +43,10 @@ Defined in `settings.gradle.kts`:
 
 ## Software Architecture
 
-### General
-Follow [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) rules.
-
-Graphical representation module dependencies:
 ```mermaid
+---
+title: Module dependencies
+---
 flowchart
     app/androidApp --> app/shared
     app/iosApp --> app/shared
