@@ -6,6 +6,8 @@ Guidance for AI agents working in this repository.
 
 1. Read [`README.md`](./README.md) for human-oriented product and project context.
 2. Use this file for implementation rules, architecture constraints, and safe edit workflow.
+3. For common step-by-step workflows (add a screen, add an endpoint, etc.) see [`SKILL.md`](./SKILL.md).
+4. When working inside a specific module, also read its scoped `AGENTS.md` listed in [Sub-Module Guidance](#sub-module-guidance).
 
 ## Project Snapshot
 
@@ -110,6 +112,16 @@ Before finishing, verify:
 2. Imports/dependencies align with existing version catalog usage.
 3. Relevant tests/build commands pass for touched modules.
 4. Documentation is updated when behavior or workflow changes.
+
+## Sub-Module Guidance
+
+Each module has a scoped `AGENTS.md` with rules specific to that area. Read it when working in that module.
+
+| Module | File |
+|---|---|
+| `core` | [`core/AGENTS.md`](./core/AGENTS.md) |
+| `server` | [`server/AGENTS.md`](./server/AGENTS.md) |
+| `app/shared` UI layer | [`app/shared/src/commonMain/kotlin/dev/jakubzika/befair/ui/AGENTS.md`](./app/shared/src/commonMain/kotlin/dev/jakubzika/befair/ui/AGENTS.md) |
 
 ## Design System
 
