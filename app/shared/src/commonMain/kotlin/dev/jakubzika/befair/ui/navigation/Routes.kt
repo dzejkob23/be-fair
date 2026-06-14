@@ -6,8 +6,32 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed interface Route : NavKey
 
+/**
+ * Top-level routes
+ */
 @Serializable
-data object Home : Route
+data object SignIn : Route
 
 @Serializable
-data object Settings : Route
+data object CreateAccount : Route
+
+@Serializable
+data object Main : Route
+
+/**
+ * Nested routes for Main navigation
+ */
+@Serializable
+data object Overview : Route
+
+@Serializable
+data object Items : Route
+
+@Serializable
+data object Profile : Route
+
+@Serializable
+data class ItemDetail(val id: String) : Route
+
+@Serializable
+data object AddNewItem : Route
