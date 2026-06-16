@@ -1,142 +1,180 @@
-# Product Requirements Document: BeFair
+---
+name: BeFair
+description: Precision Utility — clean, data-centric, teal-based M3 design system for a cost-per-use tracker.
+colors:
+  primary: "#005050"
+  on-primary: "#FFFFFF"
+  primary-container: "#006A6A"
+  on-primary-container: "#97E7E6"
+  secondary: "#4A6363"
+  on-secondary: "#FFFFFF"
+  secondary-container: "#CCE8E7"
+  on-secondary-container: "#506969"
+  tertiary: "#334863"
+  on-tertiary: "#FFFFFF"
+  tertiary-container: "#4B607C"
+  on-tertiary-container: "#C5DBFB"
+  error: "#BA1A1A"
+  on-error: "#FFFFFF"
+  error-container: "#FFDAD6"
+  on-error-container: "#93000A"
+  background: "#F8FAFA"
+  on-background: "#191C1D"
+  surface: "#F8FAFA"
+  on-surface: "#191C1D"
+  surface-variant: "#E1E3E3"
+  on-surface-variant: "#3E4948"
+  outline: "#6E7979"
+  outline-variant: "#BEC9C8"
+  inverse-surface: "#2E3131"
+  inverse-on-surface: "#EFF1F1"
+  inverse-primary: "#84D4D3"
+  surface-container-lowest: "#FFFFFF"
+  surface-container-low: "#F2F4F4"
+  surface-container: "#ECEEEE"
+  surface-container-high: "#E6E8E9"
+  surface-container-highest: "#E1E3E3"
+  surface-dim: "#D8DADA"
+  surface-bright: "#F8FAFA"
+  scrim: "#000000"
+typography:
+  display-large:
+    fontFamily: Inter
+    fontSize: 57sp
+    lineHeight: 64sp
+    fontWeight: 400
+    letterSpacing: -0.25sp
+  headline-large:
+    fontFamily: Inter
+    fontSize: 32sp
+    lineHeight: 40sp
+    fontWeight: 400
+    letterSpacing: 0sp
+  headline-medium:
+    fontFamily: Inter
+    fontSize: 28sp
+    lineHeight: 36sp
+    fontWeight: 400
+    letterSpacing: 0sp
+  title-large:
+    fontFamily: Inter
+    fontSize: 22sp
+    lineHeight: 28sp
+    fontWeight: 500
+    letterSpacing: 0sp
+  body-large:
+    fontFamily: Inter
+    fontSize: 16sp
+    lineHeight: 24sp
+    fontWeight: 400
+    letterSpacing: 0.5sp
+  body-medium:
+    fontFamily: Inter
+    fontSize: 14sp
+    lineHeight: 20sp
+    fontWeight: 400
+    letterSpacing: 0.25sp
+  label-large:
+    fontFamily: Inter
+    fontSize: 14sp
+    lineHeight: 20sp
+    fontWeight: 500
+    letterSpacing: 0.1sp
+  label-small:
+    fontFamily: Inter
+    fontSize: 11sp
+    lineHeight: 16sp
+    fontWeight: 500
+    letterSpacing: 0.5sp
+rounded:
+  sm: 4dp
+  md: 8dp
+  lg: 12dp
+  full: 9999dp
+spacing:
+  unit: 4dp
+  xs: 4dp
+  sm: 8dp
+  md: 16dp
+  lg: 24dp
+  xl: 32dp
+components:
+  top-app-bar:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.on-surface}"
+    typography: "{typography.title-large}"
+  bottom-nav-bar:
+    backgroundColor: "{colors.surface-container}"
+  bottom-nav-item-selected:
+    textColor: "{colors.on-secondary-container}"
+    backgroundColor: "{colors.secondary-container}"
+    typography: "{typography.label-small}"
+  bottom-nav-item-unselected:
+    textColor: "{colors.on-surface-variant}"
+    typography: "{typography.label-small}"
+  card:
+    backgroundColor: "{colors.surface-container-low}"
+    rounded: "{rounded.md}"
+    padding: 16dp
+  fab:
+    backgroundColor: "{colors.primary-container}"
+    textColor: "{colors.on-primary-container}"
+    rounded: "{rounded.lg}"
+---
 
-## 1. Executive Summary
-**BeFair** is a cost-per-use and ethical consumption tracking app designed to help users understand the true value of their purchases. By measuring usage frequency (e.g., wearing clothes, using tools) against the initial cost, BeFair empowers users to make more sustainable, high-value buying decisions while promoting fairness to the world.
+## Overview
 
-## 2. Project Vision & Goals
-*   **Vision:** To shift consumer behavior from "fast consumption" to "long-term value" through data-driven insights.
-*   **Primary Goal:** Provide a simple, Material Design-based interface for logging items and tracking their cost-per-use over time.
-*   **Secondary Goal:** Integrate "fairness" metrics that consider the environmental and ethical impact of products.
+Precision Utility meets Material Design 3. The UI is clean, data-centric, and trustworthy —
+teal accents reserved for interactive elements against neutral surfaces.
 
-## 3. Target Audience
-*   **Sustainable Shoppers:** Individuals looking to reduce waste by buying higher-quality items that last longer.
-*   **Budget-Conscious Users:** People wanting to see the actual ROI of their investments (e.g., "Is this $200 jacket actually cheaper than a $50 one if I wear it 10x more?").
-*   **Minimalists:** Users who want to curate a smaller, more meaningful collection of belongings.
+## Colors
 
-## 4. Key Features (Phase 1)
-*   **Item Management:**
-    *   Add new items with price, category, and initial details.
-    *   Remove/Archive items when they are no longer in use.
-    *   List view of all tracked items.
-*   **Usage Tracking:**
-    *   One-tap logging for "usage" (e.g., wearing a garment, using a device).
-    *   Logging of "maintenance" events (e.g., washing, repairs) to see total cost of ownership.
-*   **Value Analytics:**
-    *   Real-time calculation of "Cost-per-Use."
-    *   Visual trends showing usage frequency vs. price.
-*   **User Authentication:**
-    *   Secure login/signup to sync data across devices.
+The palette is a custom teal-based M3 scheme derived from Stitch design tokens.
 
-## 5. Design & Brand Identity
-*   **Brand Name:** BeFair (formerly ValueTrack).
-*   **Visual Style:** Precision Utility — Clean, data-centric, professional, and trustworthy.
-*   **Color Palette:** Primary Teal (#006a6a) on light surfaces.
-*   **Design System:** Material Design 3 (M3).
-*   **Logo Direction:** Minimalist 'B' or 'BF' monograms incorporating scales of justice, data bars, or checkmarks.
+- **Primary (#005050):** Deep teal for interactive accents and emphasis.
+- **Secondary (#4A6363):** Muted teal-grey for secondary controls and supporting UI.
+- **Tertiary (#334863):** Slate blue for complementary accents (charts, badges).
+- **Surface (#F8FAFA):** Near-white background — not pure white, slightly warm.
+- **Error (#BA1A1A):** Standard M3 error red.
 
-## 6. Technical Requirements
-*   **Platform:** Mobile-first (iOS and Android).
-*   **Navigation:** Bottom Navigation Bar for primary destinations (Items, Add, Trends, Settings).
-*   **Components:** Top App Bar for branding and profile access.
+Dark mode colors are defined in `Color.kt` alongside the light palette.
 
-## 7. Success Metrics
-*   **Engagement:** Number of items added per user.
-*   **Retention:** Frequency of usage logs.
-*   **Impact:** Average decrease in cost-per-use across a user's inventory over 6 months.
+The `primary-fixed`, `secondary-fixed`, and `tertiary-fixed` families are declared as
+standalone `val` declarations for future component use. These colors do not adapt between
+light and dark mode per M3 specification.
 
-## 8. Design System Implementation
+### Implementation
 
-The BeFair design system is a Material Design 3 implementation with a custom teal-based color palette
-derived from Stitch design tokens. All tokens live under
-`app/shared/src/commonMain/kotlin/dev/jakubzika/befair/ui/atoms/`.
+All colors live in `app/shared/src/commonMain/kotlin/dev/jakubzika/befair/ui/atoms/Color.kt`.
+Always access colors via `MaterialTheme.colorScheme.*` — never hard-code hex values in composables.
 
-### Color Palette (Teal — M3 Custom)
+## Typography
 
-| Role | Light | Dark |
-|---|---|---|
-| primary | `#005050` | `#84D4D3` |
-| onPrimary | `#FFFFFF` | `#003737` |
-| primaryContainer | `#006A6A` | `#004F4F` |
-| onPrimaryContainer | `#97E7E6` | `#9DECEB` |
-| secondary | `#4A6363` | `#B1CCCB` |
-| onSecondary | `#FFFFFF` | `#1C3535` |
-| secondaryContainer | `#CCE8E7` | `#324B4B` |
-| onSecondaryContainer | `#506969` | `#CDE9E8` |
-| tertiary | `#334863` | `#B2C8E8` |
-| onTertiary | `#FFFFFF` | `#1C3149` |
-| tertiaryContainer | `#4B607C` | `#334863` |
-| onTertiaryContainer | `#C5DBFB` | `#D2E4FF` |
-| error | `#BA1A1A` | `#FFB4AB` |
-| onError | `#FFFFFF` | `#690005` |
-| errorContainer | `#FFDAD6` | `#93000A` |
-| onErrorContainer | `#93000A` | `#FFDAD6` |
-| background | `#F8FAFA` | `#101414` |
-| onBackground | `#191C1D` | `#E1E3E3` |
-| surface | `#F8FAFA` | `#101414` |
-| onSurface | `#191C1D` | `#E1E3E3` |
-| surfaceVariant | `#E1E3E3` | `#3E4948` |
-| onSurfaceVariant | `#3E4948` | `#BEC9C8` |
-| outline | `#6E7979` | `#889392` |
-| outlineVariant | `#BEC9C8` | `#3E4948` |
-| inverseSurface | `#2E3131` | `#E1E3E3` |
-| inverseOnSurface | `#EFF1F1` | `#2E3131` |
-| inversePrimary | `#84D4D3` | `#005050` |
-| surfaceContainerLowest | `#FFFFFF` | `#0B0F0F` |
-| surfaceContainerLow | `#F2F4F4` | `#191C1D` |
-| surfaceContainer | `#ECEEEE` | `#1D2020` |
-| surfaceContainerHigh | `#E6E8E9` | `#272B2B` |
-| surfaceContainerHighest | `#E1E3E3` | `#323535` |
-| surfaceDim | `#D8DADA` | `#101414` |
-| surfaceBright | `#F8FAFA` | `#363A3A` |
-| scrim | `#000000` | `#000000` |
+Font family: **Inter**, loaded from `app/shared/src/commonMain/composeResources/font/` via
+Compose resources. All other M3 type roles retain Material 3 defaults.
 
-The `primary-fixed`, `secondary-fixed`, and `tertiary-fixed` families are also declared in
-`Color.kt` as standalone top-level `val` declarations for future component use. These colors
-do not adapt between light and dark mode per M3 specification.
+Implementation: `app/shared/src/commonMain/kotlin/dev/jakubzika/befair/ui/atoms/Type.kt`.
+Access via `MaterialTheme.typography.*`.
 
-### Type Scale
+## Layout & Spacing
 
-Font family: **Inter**, loaded from `app/shared/src/commonMain/composeResources/font/` via compose resources.
+Spacing tokens live in `BeFairDimension.Spacing` and corner radius tokens in
+`BeFairDimension.Radius`, both defined in
+`app/shared/src/commonMain/kotlin/dev/jakubzika/befair/ui/atoms/Dimension.kt`.
 
-| M3 Role | Size | Line Height | Weight | Tracking | Stitch Name |
-|---|---|---|---|---|---|
-| `displayLarge` | 57sp | 64sp | 400 | -0.25sp | display-lg |
-| `headlineLarge` | 32sp | 40sp | 400 | 0sp | headline-lg |
-| `headlineMedium` | 28sp | 36sp | 400 | 0sp | headline-lg-mobile |
-| `titleLarge` | 22sp | 28sp | 500 | 0sp | title-lg |
-| `bodyLarge` | 16sp | 24sp | 400 | 0.5sp | body-lg |
-| `bodyMedium` | 14sp | 20sp | 400 | 0.25sp | body-md |
-| `labelLarge` | 14sp | 20sp | 500 | 0.1sp | label-lg |
-| `labelSmall` | 11sp | 16sp | 500 | 0.5sp | label-sm |
+- `md` (16.dp) is the standard mobile gutter/margin.
+- `lg` (24.dp) is the desktop margin.
 
-All other M3 type roles retain Material 3 defaults.
+## Elevation & Depth
 
-### Spacing Tokens (`BeFairDimension.Spacing`)
+Use `elevation = 0.dp` on cards and rely on `surfaceContainerLow` vs `background` color
+contrast for visual separation. This follows M3's tonal elevation model.
 
-| Token | Value | Stitch Name |
-|---|---|---|
-| `unit` | 4.dp | unit |
-| `xs` | 4.dp | xs |
-| `sm` | 8.dp | sm |
-| `md` | 16.dp | md / gutter / margin-mobile |
-| `lg` | 24.dp | lg / margin-desktop |
-| `xl` | 32.dp | xl |
+## Components
 
-### Corner Radius Tokens (`BeFairDimension.Radius`)
+### TopAppBar
 
-| Token | Value | Stitch Name |
-|---|---|---|
-| `small` | 4.dp | DEFAULT |
-| `medium` | 8.dp | lg |
-| `large` | 12.dp | xl |
-| `full` | 9999.dp | full (pill shape) |
-
-### Key UI Component Patterns
-
-Access colors via `MaterialTheme.colorScheme.*` and typography via `MaterialTheme.typography.*`.
-Never hard-code hex values in composables — always reference the scheme.
-
-#### TopAppBar
+Container color is `surface`, not `primary` — keeps teal reserved for interactive accents.
 
 ```kotlin
 TopAppBar(
@@ -148,9 +186,9 @@ TopAppBar(
 )
 ```
 
-Container color is `surface`, not `primary` — keeps teal reserved for interactive accents.
+### BottomNavigationBar
 
-#### BottomNavigationBar
+Four destinations: Items, Add, Statistics, Profile.
 
 ```kotlin
 NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainer) {
@@ -170,9 +208,7 @@ NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainer) {
 }
 ```
 
-Four destinations: Items, Add, Statistics, Profile.
-
-#### Cards
+### Cards
 
 ```kotlin
 Card(
@@ -185,9 +221,7 @@ Card(
 }
 ```
 
-Use `elevation = 0.dp` and rely on `surfaceContainerLow` vs `background` color contrast for elevation.
-
-#### Floating Action Button
+### Floating Action Button
 
 ```kotlin
 FloatingActionButton(
@@ -199,3 +233,12 @@ FloatingActionButton(
     Icon(Icons.Default.Add, contentDescription = "Add item")
 }
 ```
+
+## Do's and Don'ts
+
+- **Do** access colors via `MaterialTheme.colorScheme.*` and typography via `MaterialTheme.typography.*`.
+- **Do** use `BeFairDimension.Spacing.*` and `BeFairDimension.Radius.*` for layout values.
+- **Do** use `elevation = 0.dp` and tonal surface colors for card separation.
+- **Don't** hard-code hex color values in composables.
+- **Don't** use `primary` as TopAppBar container color — use `surface`.
+- **Don't** introduce new fonts; Inter is the sole typeface.

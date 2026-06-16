@@ -55,4 +55,7 @@ The design component definition follows [atomic design](https://atomicdesign.bra
 
 ## Development Rules
 
-For AI agents and developers, please refer to [AGENTS.md](./AGENTS.md) for detailed architecture, module ownership, and safe-edit guidelines.
+For AI agents and developers:
+- [AGENTS.md](./AGENTS.md) — architecture, module ownership, boundaries, and safe-edit guidelines.
+- [DESIGN.md](./DESIGN.md) — design system tokens (colors, typography, spacing) and component patterns.
+- [PRD.md](./PRD.md) — product requirements and feature scope.
