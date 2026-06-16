@@ -8,6 +8,8 @@ Guidance for AI agents working in this repository.
 2. Read [`PRD.md`](./PRD.md) for product requirements and feature scope.
 3. Read [`DESIGN.md`](./DESIGN.md) for the design system tokens and UI component patterns.
 4. Use this file for implementation rules, architecture constraints, and safe edit workflow.
+5. For common step-by-step workflows (add a screen, add an endpoint, etc.) see [`SKILL.md`](./SKILL.md).
+6. When working inside a specific module, also read its scoped `AGENTS.md` listed in [Sub-Module Guidance](#sub-module-guidance).
 
 ## Project Snapshot
 
@@ -174,3 +176,14 @@ Before finishing, verify:
 4. New composables use `MaterialTheme.*` tokens, not hard-coded values.
 5. New dependencies are wired through the DI container, not instantiated inline.
 6. Documentation is updated when behavior or workflow changes.
+
+## Sub-Module Guidance
+
+Each module has a scoped `AGENTS.md` with rules specific to that area. Read it when working in that module.
+
+| Module | File |
+|---|---|
+| `core` | [`core/AGENTS.md`](./core/AGENTS.md) |
+| `server` | [`server/AGENTS.md`](./server/AGENTS.md) |
+| `app/shared` UI layer | [`app/shared/src/commonMain/kotlin/dev/jakubzika/befair/ui/AGENTS.md`](./app/shared/src/commonMain/kotlin/dev/jakubzika/befair/ui/AGENTS.md) |
+
