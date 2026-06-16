@@ -5,36 +5,43 @@ Guidance for AI agents working in this repository.
 ## Read This First
 
 1. Read [`README.md`](./README.md) for human-oriented product and project context.
-2. Use this file for implementation rules, architecture constraints, and safe edit workflow.
-3. For common step-by-step workflows (add a screen, add an endpoint, etc.) see [`SKILL.md`](./SKILL.md).
-4. When working inside a specific module, also read its scoped `AGENTS.md` listed in [Sub-Module Guidance](#sub-module-guidance).
+2. Read [`PRD.md`](./PRD.md) for product requirements and feature scope.
+3. Read [`DESIGN.md`](./DESIGN.md) for the design system tokens and UI component patterns.
+4. Use this file for implementation rules, architecture constraints, and safe edit workflow.
+5. For common step-by-step workflows (add a screen, add an endpoint, etc.) see [`SKILL.md`](./SKILL.md).
+6. When working inside a specific module, also read its scoped `AGENTS.md` listed in [Sub-Module Guidance](#sub-module-guidance).
 
 ## Project Snapshot
 
 - Project: **Be-Fair**
 - Package: `dev.jakubzika.befair`
-- Targets:
-  - Android
-  - iOS
-  - JVM server
+- Targets: Android, iOS, JVM server
 - Tech Stack:
     - Kotlin Multiplatform
-    - Backend
-      - Ktor server
-    - Mobile
-      - UI
-        - Compose Multiplatform (Material 3)
-        - Navigation 3
+    - Backend: Ktor server (Netty)
+    - Mobile UI: Compose Multiplatform (Material 3), Navigation 3
+    - Font: Inter (Compose resources)
+    - DI: Manual container (no framework)
 
 ## Modules and Ownership
 
 Defined in `settings.gradle.kts`:
 
-- `app/shared` - shared Compose UI module for mobile; also contains mobile domain, data, and model layers; depends on `core`.
-- `app/androidApp` - Android application entry point; depends on `app/shared`.
-- `app/iosApp` - iOS application entry point; depends on `app/shared`.
-- `core` - shared domain, data, and model layer common for all platforms (Android, iOS, and JVM).
-- `server` - Ktor server module (Netty); depends on `core`.
+| Module | Purpose | Depends on |
+|--------|---------|------------|
+| `app/shared` | Compose UI, mobile domain/data/model layers | `core` |
+| `app/androidApp` | Android entry point | `app/shared` |
+| `app/iosApp` | iOS entry point (Xcode) | `app/shared` |
+| `core` | Shared domain, data, model for all platforms | — |
+| `server` | Ktor server (Netty) | `core` |
+
+```mermaid
+flowchart
+    app/androidApp --> app/shared
+    app/iosApp --> app/shared
+    app/shared --> core
+    server --> core
+```
 
 ## Source Set Rules
 
@@ -45,31 +52,55 @@ Defined in `settings.gradle.kts`:
 
 ## Software Architecture
 
-```mermaid
----
-title: Module dependencies
----
-flowchart
-    app/androidApp --> app/shared
-    app/iosApp --> app/shared
-    app/shared --> core
-    server --> core
+### Mobile (Clean Architecture)
+
+```
+app/shared/
+├── ui/           # Presentation — Compose screens and components (atomic design)
+│   ├── atoms/        # Basic reusable UI pieces (Button, Colors, Theme, Title). Unique components.
+│   ├── molecules/    # Simple groups of atoms functioning together as a unit.
+│   ├── organisms/    # Complex components composed of molecules, atoms, and/or other organisms.
+│   ├── templates/    # Page-level layouts that place components and define content structure (e.g. LoginTemplate).
+│   └── screens/      # Specific instances of templates filled with real data (e.g. LoginScreen, HomeScreen).
+├── domain/       # Use-cases (business logic)
+├── data/         # Repositories and controllers
+└── model/        # Model classes shared across layers
 ```
 
-### Mobile Architecture
-- Presentation layer represented by `app/shared` module. Definition colors, theming, components, screen navigation, and follows [UI Architecture](#ui-architecture-appshared).
-- Domain layer for mobile platform represented by `app/shared` module by `domain` folder. Defines use-cases which represents business logic.
-- Data layer for mobile platform represented by `app/shared` module by `data` folder. Defines repositories and controllers.
-- Model layer for mobile platform represented by `app/shared` module by `model` folder. Defines model classes sharable through layers.
+See [`app/shared/.../ui/AGENTS.md`](app/shared/src/commonMain/kotlin/dev/jakubzika/befair/ui/AGENTS.md) for the full UI component layer rules. When adding a new component, place it at the lowest suitable layer.
 
-### Server Architecture
-- All server only implementation is represented by `server` module.
-- If there is something shared with mobile platform, it is placed in `core` module.
+### Server
+
+All server-only code in `server/`. Shared logic with mobile goes in `core/`.
 
 ## Dependency Injection
 
-Project does not use any kind of dependency injection framework. It uses own dependency container
-with the main component instances creation (`core/src/commonMain/kotlin/dev/jakubzika/befair/di/AppContainer.kt`).
+No DI framework — uses manual dependency containers:
+
+- `core/.../di/AppContainer.kt` — shared instances (e.g. `httpClient`).
+- `app/shared/.../di/MobileAppContainer.kt` — mobile-specific instances, wraps `AppContainer`.
+- Container provided to composables via `CompositionLocalProvider(LocalAppContainer provides container)`.
+- Accessed in composables via `LocalAppContainer.current`.
+
+```kotlin
+// Correct — access via CompositionLocal
+val container = LocalAppContainer.current
+val repo = container.profileRepository
+
+// Wrong — instantiate directly in a composable
+val repo = ProfileRepositoryImpl(httpClient) // breaks DI, untestable
+```
+
+## Design System
+
+See [`DESIGN.md`](./DESIGN.md) for the full token spec (colors, typography, spacing, components).
+
+Key rules:
+- Access colors via `MaterialTheme.colorScheme.*`, typography via `MaterialTheme.typography.*`.
+- Use `BeFairDimension.Spacing.*` and `BeFairDimension.Radius.*` for layout.
+- Never hard-code hex values in composables.
+- TopAppBar uses `surface` container color, not `primary`.
+- Cards use `elevation = 0.dp` with tonal surface colors.
 
 ## Build, Run, and Test Commands
 
@@ -80,8 +111,7 @@ with the main component instances creation (`core/src/commonMain/kotlin/dev/jaku
 # Server (Ktor on Netty)
 ./gradlew :server:run
 
-# iOS
-# Open app/iosApp/ in Xcode and run from Xcode
+# iOS — open app/iosApp/ in Xcode and run from there
 
 # All tests
 ./gradlew test
@@ -96,13 +126,45 @@ with the main component instances creation (`core/src/commonMain/kotlin/dev/jaku
 
 Use `gradle/libs.versions.toml` for versions and plugin aliases.
 
+## Gotchas
+
+- `BeFairTypography()` is a `@Composable` function (loads Inter via Compose resources) — call it only inside composition, never assign to a top-level `val`.
+- The `primary-fixed` color families in `Color.kt` are standalone `val` declarations, not part of `lightColorScheme`/`darkColorScheme` — they do not adapt between light/dark mode.
+- `LocalAppContainer` uses `staticCompositionLocalOf` and errors if no value is provided — every composable tree must be wrapped with the provider in `App.kt`.
+- `expect fun getPlatform(): Platform` lives in `core` with `actual` implementations in `androidMain`, `iosMain`, and `jvmMain` — not in `app/shared`.
+- `HttpClientFactory` follows the same `expect`/`actual` pattern in `core` across all three platform source sets.
+- The iOS app is an Xcode project, not a Gradle target — `./gradlew` commands do not build or test iOS.
+
+## Boundaries
+
+### Always do
+- Place code in the correct module and source set.
+- Use `gradle/libs.versions.toml` for all dependency versions.
+- Follow atomic design for UI: atoms → molecules → organisms → templates → screens.
+- Wire new dependencies through the DI containers (`AppContainer` or `MobileAppContainer`).
+- Validate changes with the smallest relevant test or build command.
+
+### Ask first
+- Adding a new Gradle module or changing `settings.gradle.kts`.
+- Introducing a new third-party library.
+- Changing the DI container structure or `CompositionLocal` setup.
+- Modifying GitHub Actions workflows (`.github/`).
+- Altering the Ktor server routing or serialization setup.
+
+### Never do
+- Hard-code hex color values in composables.
+- Instantiate repositories or data sources directly in composables — use the DI container.
+- Add platform-specific code to `commonMain`.
+- Modify generated or build output directories.
+- Remove or rename existing public API without confirming no other module depends on it.
+- Skip the version catalog and add raw dependency coordinates in `build.gradle.kts`.
+
 ## Agent Workflow Expectations
 
 - Make minimal, targeted edits; avoid unrelated refactors.
-- Do not modify generated/build output directories.
-- Keep module boundaries intact (UI and mobile domain/data in `app/shared`, shared logic for all platforms in `core`, backend in `server`).
-- Validate changed behavior with the smallest relevant test task when possible.
+- Keep module boundaries intact.
 - If requirements are ambiguous, state assumptions briefly in your response.
+- Update documentation when behavior or workflow changes.
 
 ## Safe Change Checklist
 
@@ -111,7 +173,9 @@ Before finishing, verify:
 1. Code is in the correct module and source set.
 2. Imports/dependencies align with existing version catalog usage.
 3. Relevant tests/build commands pass for touched modules.
-4. Documentation is updated when behavior or workflow changes.
+4. New composables use `MaterialTheme.*` tokens, not hard-coded values.
+5. New dependencies are wired through the DI container, not instantiated inline.
+6. Documentation is updated when behavior or workflow changes.
 
 ## Sub-Module Guidance
 
@@ -123,10 +187,3 @@ Each module has a scoped `AGENTS.md` with rules specific to that area. Read it w
 | `server` | [`server/AGENTS.md`](./server/AGENTS.md) |
 | `app/shared` UI layer | [`app/shared/src/commonMain/kotlin/dev/jakubzika/befair/ui/AGENTS.md`](./app/shared/src/commonMain/kotlin/dev/jakubzika/befair/ui/AGENTS.md) |
 
-## Design System
-
-See [`DESIGN.md § 8`](./DESIGN.md#8-design-system-implementation) for the full color palette,
-type scale, spacing tokens, and component patterns.
-
-Key rule: always access colors via `MaterialTheme.colorScheme.*` and typography via
-`MaterialTheme.typography.*`. Never hard-code hex values in composables.
