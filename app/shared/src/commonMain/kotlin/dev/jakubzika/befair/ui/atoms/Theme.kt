@@ -5,6 +5,31 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
+
+// "Notice" (advisory/bookmark) has no M3 ColorScheme role, so it's exposed separately
+// via LocalBeFairExtendedColors rather than folded into a tonal slot.
+data class BeFairExtendedColors(
+    val notice: Color,
+    val onNotice: Color,
+    val noticeTint: Color,
+)
+
+private val lightExtendedColors = BeFairExtendedColors(
+    notice = noticeLight,
+    onNotice = onNoticeLight,
+    noticeTint = noticeTintLight,
+)
+
+private val darkExtendedColors = BeFairExtendedColors(
+    notice = noticeDark,
+    onNotice = onNoticeDark,
+    noticeTint = noticeTintDark,
+)
+
+val LocalBeFairExtendedColors = staticCompositionLocalOf { lightExtendedColors }
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -85,16 +110,22 @@ private val darkScheme = darkColorScheme(
 @Composable
 fun BeFairTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable() () -> Unit
+    content: @Composable () -> Unit
 ) {
     val colorScheme = when {
         darkTheme -> darkScheme
         else -> lightScheme
     }
+    val extendedColors = when {
+        darkTheme -> darkExtendedColors
+        else -> lightExtendedColors
+    }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = BeFairTypography(),
-        content = content
-    )
+    CompositionLocalProvider(LocalBeFairExtendedColors provides extendedColors) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = BeFairTypography(),
+            content = content
+        )
+    }
 }
