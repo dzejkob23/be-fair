@@ -9,6 +9,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import dev.jakubzika.befair.ui.atoms.PrimaryButton
+import be_fair.app.shared.generated.resources.Res
+import be_fair.app.shared.generated.resources.screen_overview_go_to_item_detail
+import be_fair.app.shared.generated.resources.screen_overview_go_to_items
+import be_fair.app.shared.generated.resources.screen_overview_invested_sum
+import be_fair.app.shared.generated.resources.screen_overview_title
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun OverviewScreen(
@@ -26,10 +32,13 @@ fun OverviewScreen(
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Overview Screen")
-            Text(text = "Invested Sum: $investedSum")
-            PrimaryButton(title = "Go to Item Detail (ID: 1)", onClick = { onNavToItemDetailScreen("1") })
-            PrimaryButton(title = "Go to Items", onClick = onNavToItemsScreen)
+            Text(text = stringResource(Res.string.screen_overview_title))
+            Text(text = stringResource(Res.string.screen_overview_invested_sum, investedSum.toString()))
+            PrimaryButton(
+                title = stringResource(Res.string.screen_overview_go_to_item_detail),
+                onClick = { onNavToItemDetailScreen("1") }
+            )
+            PrimaryButton(title = stringResource(Res.string.screen_overview_go_to_items), onClick = onNavToItemsScreen)
         }
     }
 }

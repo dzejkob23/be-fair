@@ -14,6 +14,11 @@ import dev.jakubzika.befair.ui.navigation.Items
 import dev.jakubzika.befair.ui.navigation.Overview
 import dev.jakubzika.befair.ui.navigation.Profile
 import dev.jakubzika.befair.ui.navigation.Route
+import be_fair.app.shared.generated.resources.Res
+import be_fair.app.shared.generated.resources.bottom_bar_items
+import be_fair.app.shared.generated.resources.bottom_bar_overview
+import be_fair.app.shared.generated.resources.bottom_bar_profile
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun BottomBar(
@@ -23,24 +28,28 @@ fun BottomBar(
     onNavigateToProfile: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val overviewLabel = stringResource(Res.string.bottom_bar_overview)
+    val itemsLabel = stringResource(Res.string.bottom_bar_items)
+    val profileLabel = stringResource(Res.string.bottom_bar_profile)
+
     NavigationBar(modifier = modifier) {
         NavigationBarItem(
             selected = currentRoute == Overview,
             onClick = onNavigateToOverview,
-            icon = { Icon(Icons.Default.Home, contentDescription = "Overview") },
-            label = { Text("Overview") }
+            icon = { Icon(Icons.Default.Home, contentDescription = overviewLabel) },
+            label = { Text(overviewLabel) }
         )
         NavigationBarItem(
             selected = currentRoute == Items,
             onClick = onNavigateToItems,
-            icon = { Icon(Icons.Default.List, contentDescription = "Items") },
-            label = { Text("Items") }
+            icon = { Icon(Icons.Default.List, contentDescription = itemsLabel) },
+            label = { Text(itemsLabel) }
         )
         NavigationBarItem(
             selected = currentRoute == Profile,
             onClick = onNavigateToProfile,
-            icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
-            label = { Text("Profile") }
+            icon = { Icon(Icons.Default.Person, contentDescription = profileLabel) },
+            label = { Text(profileLabel) }
         )
     }
 }

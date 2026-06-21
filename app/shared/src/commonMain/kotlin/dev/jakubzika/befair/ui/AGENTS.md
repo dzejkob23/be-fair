@@ -5,6 +5,13 @@ Guidance for AI agents working on UI components, templates, and screens.
 # Rules
 When editing UI, preserve this structure and place new components at the lowest suitable layer.
 
+## Strings
+Never hardcode user-facing text directly in a composable. Define every string in
+[`app/shared/src/commonMain/composeResources/values/strings.xml`](app/shared/src/commonMain/composeResources/values/strings.xml)
+and read it via `stringResource(Res.string.<name>)`. This is the Compose Multiplatform
+resource file (not `app/androidApp/src/main/res/values/strings.xml`, which is Android-only
+and unreachable from `commonMain`) — it generates a `Res.string.*` API shared by Android and iOS.
+
 ## Design system
 Read [`DESIGN.md`](app/shared/src/commonMain/kotlin/dev/jakubzika/befair/ui/DESIGN.md).
 

@@ -10,6 +10,8 @@ plugins {
 
 compose.resources {
     packageOfResClass = "be_fair.app.shared.generated.resources"
+    publicResClass = true
+    generateResClass = always
 }
 
 kotlin {
@@ -17,6 +19,10 @@ kotlin {
         namespace = "dev.jakubzika.befair.composeapp"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
+
+        @Suppress("OPT_IN_USAGE")
+        androidResources.enable = true
+
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
@@ -44,7 +50,6 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation(compose.components.resources)
             implementation(compose.materialIconsExtended)
             implementation(libs.jetbrains.navigation3.ui)
             implementation(libs.kotlinx.serialization.json)

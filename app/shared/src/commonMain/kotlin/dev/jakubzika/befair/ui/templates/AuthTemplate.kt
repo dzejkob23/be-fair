@@ -32,6 +32,25 @@ import dev.jakubzika.befair.ui.atoms.LocalBeFairExtendedColors
 import dev.jakubzika.befair.ui.atoms.PasswordTextField
 import dev.jakubzika.befair.ui.atoms.PrimaryButton
 import dev.jakubzika.befair.ui.atoms.SecondaryButton
+import be_fair.app.shared.generated.resources.Res
+import be_fair.app.shared.generated.resources.auth_continue_with_apple
+import be_fair.app.shared.generated.resources.auth_continue_with_google
+import be_fair.app.shared.generated.resources.auth_divider_or
+import be_fair.app.shared.generated.resources.auth_error_email_invalid
+import be_fair.app.shared.generated.resources.auth_error_name_required
+import be_fair.app.shared.generated.resources.auth_error_password_too_short
+import be_fair.app.shared.generated.resources.auth_name_label
+import be_fair.app.shared.generated.resources.auth_name_placeholder
+import be_fair.app.shared.generated.resources.auth_password_placeholder_register
+import be_fair.app.shared.generated.resources.auth_password_placeholder_sign_in
+import be_fair.app.shared.generated.resources.auth_subtitle_register
+import be_fair.app.shared.generated.resources.auth_subtitle_sign_in
+import be_fair.app.shared.generated.resources.auth_title_create_account
+import be_fair.app.shared.generated.resources.auth_title_sign_in
+import be_fair.app.shared.generated.resources.auth_toggle_create_one
+import be_fair.app.shared.generated.resources.auth_toggle_has_account
+import be_fair.app.shared.generated.resources.auth_toggle_no_account
+import org.jetbrains.compose.resources.stringResource
 
 enum class AuthMode { SignIn, Register }
 
@@ -54,11 +73,15 @@ fun AuthTemplate(
     var emailError by remember(mode) { mutableStateOf<String?>(null) }
     var passwordError by remember(mode) { mutableStateOf<String?>(null) }
 
+    val nameRequiredError = stringResource(Res.string.auth_error_name_required)
+    val emailInvalidError = stringResource(Res.string.auth_error_email_invalid)
+    val passwordTooShortError = stringResource(Res.string.auth_error_password_too_short)
+
     fun validateAndSubmit() {
         val isRegister = mode == AuthMode.Register
-        val nextNameError = if (isRegister && name.isBlank()) "Enter your name." else null
-        val nextEmailError = if (!emailRegex.matches(email)) "Enter a valid email address." else null
-        val nextPasswordError = if (password.length < 8) "Minimum 8 characters." else null
+        val nextNameError = if (isRegister && name.isBlank()) nameRequiredError else null
+        val nextEmailError = if (!emailRegex.matches(email)) emailInvalidError else null
+        val nextPasswordError = if (password.length < 8) passwordTooShortError else null
 
         nameError = nextNameError
         emailError = nextEmailError
@@ -80,7 +103,11 @@ fun AuthTemplate(
         Spacer(modifier = Modifier.height(BeFairDimension.Spacing.xl))
 
         Text(
-            text = if (mode == AuthMode.SignIn) "Sign in" else "Create account",
+            text = if (mode == AuthMode.SignIn) {
+                stringResource(Res.string.auth_title_sign_in)
+            } else {
+                stringResource(Res.string.auth_title_create_account)
+            },
             style = MaterialTheme.typography.displayLarge,
             color = MaterialTheme.colorScheme.onSurface
         )
@@ -89,9 +116,9 @@ fun AuthTemplate(
 
         Text(
             text = if (mode == AuthMode.SignIn) {
-                "Welcome back. Sign in to see the true cost of what you own."
+                stringResource(Res.string.auth_subtitle_sign_in)
             } else {
-                "Track what your clothes and tools really cost."
+                stringResource(Res.string.auth_subtitle_register)
             },
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -103,8 +130,8 @@ fun AuthTemplate(
             BeFairTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = "Name",
-                placeholder = "Your name",
+                label = stringResource(Res.string.auth_name_label),
+                placeholder = stringResource(Res.string.auth_name_placeholder),
                 isError = nameError != null,
                 errorMessage = nameError,
                 autofillContentType = ContentType.PersonFullName
@@ -124,7 +151,11 @@ fun AuthTemplate(
         PasswordTextField(
             value = password,
             onValueChange = { password = it },
-            placeholder = if (mode == AuthMode.Register) "At least 8 characters" else "Your password",
+            placeholder = if (mode == AuthMode.Register) {
+                stringResource(Res.string.auth_password_placeholder_register)
+            } else {
+                stringResource(Res.string.auth_password_placeholder_sign_in)
+            },
             isError = passwordError != null,
             errorMessage = passwordError,
             autofillContentType = if (mode == AuthMode.Register) {
@@ -138,7 +169,11 @@ fun AuthTemplate(
 
         PrimaryButton(
             modifier = Modifier.fillMaxWidth(),
-            title = if (mode == AuthMode.SignIn) "Sign in" else "Create account",
+            title = if (mode == AuthMode.SignIn) {
+                stringResource(Res.string.auth_title_sign_in)
+            } else {
+                stringResource(Res.string.auth_title_create_account)
+            },
             onClick = ::validateAndSubmit
         )
 
@@ -150,7 +185,7 @@ fun AuthTemplate(
 
         SecondaryButton(
             modifier = Modifier.fillMaxWidth(),
-            title = "Continue with Google",
+            title = stringResource(Res.string.auth_continue_with_google),
             onClick = onContinueWithGoogle
         )
 
@@ -158,7 +193,7 @@ fun AuthTemplate(
 
         SecondaryButton(
             modifier = Modifier.fillMaxWidth(),
-            title = "Continue with Apple",
+            title = stringResource(Res.string.auth_continue_with_apple),
             onClick = onContinueWithApple
         )
 
@@ -171,15 +206,19 @@ fun AuthTemplate(
         ) {
             Text(
                 text = if (mode == AuthMode.SignIn) {
-                    "Don't have an account?"
+                    stringResource(Res.string.auth_toggle_no_account)
                 } else {
-                    "Already have an account?"
+                    stringResource(Res.string.auth_toggle_has_account)
                 },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             LinkButton(
-                text = if (mode == AuthMode.SignIn) "Create one" else "Sign in",
+                text = if (mode == AuthMode.SignIn) {
+                    stringResource(Res.string.auth_toggle_create_one)
+                } else {
+                    stringResource(Res.string.auth_title_sign_in)
+                },
                 onClick = {
                     mode = if (mode == AuthMode.SignIn) AuthMode.Register else AuthMode.SignIn
                 }
@@ -204,7 +243,7 @@ private fun AuthDivider() {
             modifier = Modifier.padding(horizontal = BeFairDimension.Spacing.sm)
         ) {
             Text(
-                text = "or",
+                text = stringResource(Res.string.auth_divider_or),
                 style = MaterialTheme.typography.bodySmall,
                 color = LocalBeFairExtendedColors.current.ink3
             )

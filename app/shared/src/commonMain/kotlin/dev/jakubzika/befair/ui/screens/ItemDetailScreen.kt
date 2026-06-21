@@ -8,6 +8,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import dev.jakubzika.befair.ui.atoms.PrimaryButton
+import be_fair.app.shared.generated.resources.Res
+import be_fair.app.shared.generated.resources.screen_item_detail_back
+import be_fair.app.shared.generated.resources.screen_item_detail_title
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ItemDetailScreen(
@@ -19,8 +23,8 @@ fun ItemDetailScreen(
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Item Detail Screen (ID: $id)")
-            PrimaryButton(title = "Back", onClick = onBack)
+            Text(text = stringResource(Res.string.screen_item_detail_title, id))
+            PrimaryButton(title = stringResource(Res.string.screen_item_detail_back), onClick = onBack)
         }
     }
 }

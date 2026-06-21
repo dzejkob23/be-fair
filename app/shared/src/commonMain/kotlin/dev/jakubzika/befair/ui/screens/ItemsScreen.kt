@@ -9,6 +9,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import dev.jakubzika.befair.ui.atoms.PrimaryButton
+import be_fair.app.shared.generated.resources.Res
+import be_fair.app.shared.generated.resources.screen_items_add_new_item
+import be_fair.app.shared.generated.resources.screen_items_go_to_item_detail
+import be_fair.app.shared.generated.resources.screen_items_title
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ItemsScreen(
@@ -22,9 +27,12 @@ fun ItemsScreen(
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Items Screen")
-            PrimaryButton(title = "Go to Item Detail (ID: 2)", onClick = { onNavToItemDetailScreen("2") })
-            PrimaryButton(title = "Add New Item", onClick = onNavToAddNewItemScreen)
+            Text(text = stringResource(Res.string.screen_items_title))
+            PrimaryButton(
+                title = stringResource(Res.string.screen_items_go_to_item_detail),
+                onClick = { onNavToItemDetailScreen("2") }
+            )
+            PrimaryButton(title = stringResource(Res.string.screen_items_add_new_item), onClick = onNavToAddNewItemScreen)
         }
     }
 }

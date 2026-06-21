@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand -->
+    <string name="brand_mark">B=</string>
+    <string name="brand_wordmark">BeFair</string>
+
+    <!-- Auth template -->
+    <string name="auth_title_sign_in">Sign in</string>
+    <string name="auth_title_create_account">Create account</string>
+    <string name="auth_subtitle_sign_in">Welcome back. Sign in to see the true cost of what you own.</string>
+    <string name="auth_subtitle_register">Track what your clothes and tools really cost.</string>
+    <string name="auth_error_name_required">Enter your name.</string>
+    <string name="auth_error_email_invalid">Enter a valid email address.</string>
+    <string name="auth_error_password_too_short">Minimum 8 characters.</string>
+    <string name="auth_name_label">Name</string>
+    <string name="auth_name_placeholder">Your name</string>
+    <string name="auth_password_placeholder_register">At least 8 characters</string>
+    <string name="auth_password_placeholder_sign_in">Your password</string>
+    <string name="auth_continue_with_google">Continue with Google</string>
+    <string name="auth_continue_with_apple">Continue with Apple</string>
+    <string name="auth_toggle_no_account">Don\'t have an account?</string>
+    <string name="auth_toggle_has_account">Already have an account?</string>
+    <string name="auth_toggle_create_one">Create one</string>
+    <string name="auth_divider_or">or</string>
+
+    <!-- Bottom navigation -->
+    <string name="bottom_bar_overview">Overview</string>
+    <string name="bottom_bar_items">Items</string>
+    <string name="bottom_bar_profile">Profile</string>
+
+    <!-- Overview screen -->
+    <string name="screen_overview_title">Overview Screen</string>
+    <string name="screen_overview_invested_sum">Invested Sum: %1$s</string>
+    <string name="screen_overview_go_to_item_detail">Go to Item Detail (ID: 1)</string>
+    <string name="screen_overview_go_to_items">Go to Items</string>
+
+    <!-- Items screen -->
+    <string name="screen_items_title">Items Screen</string>
+    <string name="screen_items_go_to_item_detail">Go to Item Detail (ID: 2)</string>
+    <string name="screen_items_add_new_item">Add New Item</string>
+
+    <!-- Item detail screen -->
+    <string name="screen_item_detail_title">Item Detail Screen (ID: %1$s)</string>
+    <string name="screen_item_detail_back">Back</string>
+
+    <!-- Add new item screen -->
+    <string name="screen_add_new_item_title">Add New Item Screen</string>
+    <string name="screen_add_new_item_create">Create Item</string>
+    <string name="screen_add_new_item_back">Back</string>
+
+    <!-- Profile screen -->
+    <string name="screen_profile_title">Profile Screen</string>
+    <string name="screen_profile_sign_out">Sign Out</string>
+</resources>
