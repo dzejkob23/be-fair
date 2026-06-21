@@ -6,10 +6,9 @@ Guidance for AI agents working in this repository.
 
 1. Read [`README.md`](./README.md) for human-oriented product and project context.
 2. Read [`PRD.md`](./PRD.md) for product requirements and feature scope.
-3. Read [`DESIGN.md`](./DESIGN.md) for the design system tokens and UI component patterns.
-4. Use this file for implementation rules, architecture constraints, and safe edit workflow.
-5. For common step-by-step workflows (add a screen, add an endpoint, etc.) see [`SKILL.md`](./SKILL.md).
-6. When working inside a specific module, also read its scoped `AGENTS.md` listed in [Sub-Module Guidance](#sub-module-guidance).
+3. Use this file for implementation rules, architecture constraints, and safe edit workflow.
+4. For common step-by-step workflows (add a screen, add an endpoint, etc.) see [`SKILL.md`](./SKILL.md).
+5. When working inside a specific module, also read its scoped `AGENTS.md` listed in [Sub-Module Guidance](#sub-module-guidance).
 
 ## Project Snapshot
 
@@ -90,17 +89,6 @@ val repo = container.profileRepository
 // Wrong — instantiate directly in a composable
 val repo = ProfileRepositoryImpl(httpClient) // breaks DI, untestable
 ```
-
-## Design System
-
-See [`DESIGN.md`](./DESIGN.md) for the full token spec (colors, typography, spacing, components).
-
-Key rules:
-- Access colors via `MaterialTheme.colorScheme.*`, typography via `MaterialTheme.typography.*`.
-- Use `BeFairDimension.Spacing.*` and `BeFairDimension.Radius.*` for layout.
-- Never hard-code hex values in composables.
-- TopAppBar uses `surface` container color, not `primary`.
-- Cards use `elevation = 0.dp` with tonal surface colors.
 
 ## Build, Run, and Test Commands
 
