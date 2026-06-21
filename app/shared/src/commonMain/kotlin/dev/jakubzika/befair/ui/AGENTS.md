@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Guidance for AI agents working on UI components.
+Guidance for AI agents working on UI components, templates, and screens.
 
 # Rules
 When editing UI, preserve this structure and place new components at the lowest suitable layer.

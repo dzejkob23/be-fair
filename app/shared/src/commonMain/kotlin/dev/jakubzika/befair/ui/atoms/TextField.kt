@@ -20,9 +20,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.contentType
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -38,6 +43,7 @@ private val TextFieldShape = RoundedCornerShape(BeFairDimension.Radius.small)
 private val TextFieldHeight = 48.dp
 private val TextFieldContentPadding = PaddingValues(horizontal = 14.dp)
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun BeFairTextField(
     modifier: Modifier = Modifier,
@@ -50,7 +56,8 @@ fun BeFairTextField(
     errorMessage: String? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    singleLine: Boolean = true
+    singleLine: Boolean = true,
+    autofillContentType: ContentType? = null
 ) {
     var isFocused by remember { mutableStateOf(false) }
 
@@ -75,7 +82,13 @@ fun BeFairTextField(
                 .height(TextFieldHeight)
                 .background(MaterialTheme.colorScheme.surface, TextFieldShape)
                 .border(1.dp, borderColor, TextFieldShape)
-                .onFocusChanged { isFocused = it.isFocused },
+                .onFocusChanged { isFocused = it.isFocused }
+                .semantics {
+                    contentDescription = label
+                    if (autofillContentType != null) {
+                        contentType = autofillContentType
+                    }
+                },
             enabled = isEnabled,
             textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
             cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
@@ -111,6 +124,7 @@ fun BeFairTextField(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun EmailTextField(
     modifier: Modifier = Modifier,
@@ -134,10 +148,12 @@ fun EmailTextField(
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Email,
             capitalization = KeyboardCapitalization.None
-        )
+        ),
+        autofillContentType = ContentType.EmailAddress
     )
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun PasswordTextField(
     modifier: Modifier = Modifier,
@@ -147,7 +163,8 @@ fun PasswordTextField(
     placeholder: String = "Your password",
     isEnabled: Boolean = true,
     isError: Boolean = false,
-    errorMessage: String? = null
+    errorMessage: String? = null,
+    autofillContentType: ContentType = ContentType.Password
 ) {
     BeFairTextField(
         modifier = modifier,
@@ -159,7 +176,8 @@ fun PasswordTextField(
         isError = isError,
         errorMessage = errorMessage,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        visualTransformation = PasswordVisualTransformation()
+        visualTransformation = PasswordVisualTransformation(),
+        autofillContentType = autofillContentType
     )
 }
 

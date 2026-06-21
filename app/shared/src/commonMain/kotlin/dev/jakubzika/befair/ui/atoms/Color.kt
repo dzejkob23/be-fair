@@ -56,6 +56,9 @@ val noticeLight = Color(0xFFE2A416)
 val onNoticeLight = Color(0xFF161614)
 val noticeTintLight = Color(0xFFFBF3DE)
 
+// Tertiary hint tone — not an M3 role, exposed via LocalBeFairExtendedColors.
+val ink3Light = Color(0xFF9C9C95)
+
 /***********************/
 /***** DARK COLORS *****/
 /***********************/
@@ -100,3 +103,6 @@ val surfaceContainerHighestDark = Color(0xFF3D3D38)
 val noticeDark = Color(0xFFE9B53D)
 val onNoticeDark = Color(0xFF0C0C0B)
 val noticeTintDark = Color(0xFF2A2415)
+
+// Tertiary hint tone — not an M3 role, exposed via LocalBeFairExtendedColors.
+val ink3Dark = Color(0xFF6E6E68)

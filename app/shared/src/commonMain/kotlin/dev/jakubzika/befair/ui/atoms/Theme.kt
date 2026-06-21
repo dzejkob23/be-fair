@@ -15,18 +15,21 @@ data class BeFairExtendedColors(
     val notice: Color,
     val onNotice: Color,
     val noticeTint: Color,
+    val ink3: Color,
 )
 
 private val lightExtendedColors = BeFairExtendedColors(
     notice = noticeLight,
     onNotice = onNoticeLight,
     noticeTint = noticeTintLight,
+    ink3 = ink3Light,
 )
 
 private val darkExtendedColors = BeFairExtendedColors(
     notice = noticeDark,
     onNotice = onNoticeDark,
     noticeTint = noticeTintDark,
+    ink3 = ink3Dark,
 )
 
 val LocalBeFairExtendedColors = staticCompositionLocalOf { lightExtendedColors }

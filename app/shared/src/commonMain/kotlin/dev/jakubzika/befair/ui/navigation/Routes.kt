@@ -13,9 +13,6 @@ sealed interface Route : NavKey
 data object SignIn : Route
 
 @Serializable
-data object CreateAccount : Route
-
-@Serializable
 data object Main : Route
 
 /**

@@ -16,7 +16,6 @@ import dev.jakubzika.befair.di.AppContainer
 import dev.jakubzika.befair.ui.LocalAppContainer
 import dev.jakubzika.befair.ui.atoms.BeFairTheme
 import dev.jakubzika.befair.ui.navigation.AddNewItem
-import dev.jakubzika.befair.ui.navigation.CreateAccount
 import dev.jakubzika.befair.ui.navigation.ItemDetail
 import dev.jakubzika.befair.ui.navigation.Items
 import dev.jakubzika.befair.ui.navigation.Main
@@ -24,9 +23,8 @@ import dev.jakubzika.befair.ui.navigation.Overview
 import dev.jakubzika.befair.ui.navigation.Profile
 import dev.jakubzika.befair.ui.navigation.Route
 import dev.jakubzika.befair.ui.navigation.SignIn
-import dev.jakubzika.befair.ui.screens.CreateAccountScreen
+import dev.jakubzika.befair.ui.screens.AuthScreen
 import dev.jakubzika.befair.ui.screens.MainScreen
-import dev.jakubzika.befair.ui.screens.SignInScreen
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.serializer
@@ -44,7 +42,6 @@ fun App() {
                     serializersModule = SerializersModule {
                         polymorphic(NavKey::class) {
                             subclass(SignIn::class, serializer())
-                            subclass(CreateAccount::class, serializer())
                             subclass(Main::class, serializer())
                             // Also include nested routes for serialization support if needed at top level
                             subclass(Overview::class, serializer())
@@ -65,16 +62,7 @@ fun App() {
                 onBack = { backStack.removeLast() },
                 entryProvider = entryProvider {
                     entry<SignIn> {
-                        SignInScreen(
-                            onSignIn = { backStack.add(Main) },
-                            onNavToCreateAccount = { backStack.add(CreateAccount) }
-                        )
-                    }
-                    entry<CreateAccount> {
-                        CreateAccountScreen(
-                            onCreateAccount = { backStack.add(Main) },
-                            onNavToSignIn = { backStack.removeLast() }
-                        )
+                        AuthScreen(onAuthenticated = { backStack.add(Main) })
                     }
                     entry<Main> {
                         MainScreen(
