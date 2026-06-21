@@ -22,6 +22,23 @@ colors:
   error: "#C9431A"          # blood orange — destructive / error
   notice: "#E2A416"         # honey yellow — notice / bookmark
   notice-tint: "#FBF3DE"
+colors-dark:
+  # Neutrals — warm charcoals; tonal layers invert (surfaces lift LIGHTER)
+  canvas: "#0C0C0B"
+  background: "#161614"
+  surface: "#1F1F1C"
+  surface-2: "#272723"      # raised/pressed surface, bottom sheets
+  ink: "#EDEDE8"
+  ink-2: "#A3A39C"
+  ink-3: "#6E6E68"
+  hairline: "#2E2E2A"
+  hairline-strong: "#3D3D38"
+  # Semantic accents — lightened for contrast on dark; meanings unchanged
+  primary: "#5FA653"        # leaf green — confirm / start / success
+  on-primary: "#0C0C0B"     # dark text on luminous green
+  error: "#E0673E"          # blood orange — destructive / error
+  notice: "#E9B53D"         # honey yellow — notice / bookmark
+  notice-tint: "#2A2415"    # dark amber wash for notice surfaces
 typography:
   display:
     fontFamily: Helvetica Neue
@@ -255,6 +272,46 @@ colors:
   error: "#C9431A"
   notice: "#E2A416"
   notice-tint: "#FBF3DE"
+```
+
+### Dark Mode
+
+Dark mode is **not an inversion** — it is the same Digital Functionalism logic
+re-grounded on warm charcoal. Three principles govern it:
+
+- **Tonal layering inverts.** In light mode surfaces lift toward white; in dark
+  mode the background recedes to a warm charcoal (#161614) and surfaces step
+  *lighter* (#1F1F1C → #272723). Depth still reads through tone and hairlines —
+  no new shadows are introduced.
+- **Neutrals stay warm.** Nothing is pure #000 or #FFF. Charcoals carry the same
+  warm tint as the light neutrals, so the system feels matte, not inky.
+- **Accents lift, meanings hold.** Leaf green, blood orange, and honey yellow are
+  raised ~15–20% in lightness to clear 4.5:1 contrast on dark surfaces without
+  becoming neon. Their roles never change. Because the lightened leaf green is
+  luminous, **`on-primary` flips to near-black** for cleaner button text, and
+  `notice-tint` becomes a dark amber wash rather than pale cream.
+
+The *reduced-accent* mode applies identically: leaf green retreats to neutral
+surfaces with ink text, and the hierarchy must remain legible with color removed.
+
+### Design Tokens
+
+```
+colors-dark:
+  canvas: "#0C0C0B"
+  background: "#161614"
+  surface: "#1F1F1C"
+  surface-2: "#272723"
+  ink: "#EDEDE8"
+  ink-2: "#A3A39C"
+  ink-3: "#6E6E68"
+  hairline: "#2E2E2A"
+  hairline-strong: "#3D3D38"
+  primary: "#5FA653"
+  on-primary: "#0C0C0B"
+  error: "#E0673E"
+  notice: "#E9B53D"
+  notice-tint: "#2A2415"
 ```
 
 ## Typography
