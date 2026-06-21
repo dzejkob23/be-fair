@@ -65,7 +65,7 @@ fun AuthTemplate(
         passwordError = nextPasswordError
 
         if (nextNameError == null && nextEmailError == null && nextPasswordError == null) {
-            onSubmit(if (isRegister) name else null, email)
+            onSubmit(if (isRegister) name.trim() else null, email)
         }
     }
 
@@ -91,7 +91,7 @@ fun AuthTemplate(
             text = if (mode == AuthMode.SignIn) {
                 "Welcome back. Sign in to see the true cost of what you own."
             } else {
-                "Create an account to start tracking the true cost of what you own."
+                "Track what your clothes and tools really cost."
             },
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -124,6 +124,7 @@ fun AuthTemplate(
         PasswordTextField(
             value = password,
             onValueChange = { password = it },
+            placeholder = if (mode == AuthMode.Register) "At least 8 characters" else "Your password",
             isError = passwordError != null,
             errorMessage = passwordError,
             autofillContentType = if (mode == AuthMode.Register) {
