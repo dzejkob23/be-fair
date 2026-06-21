@@ -23,6 +23,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
+import androidx.compose.ui.tooling.preview.Preview
+import dev.jakubzika.befair.ui.atoms.BeFairTheme
 import dev.jakubzika.befair.ui.atoms.BeFairDimension
 import dev.jakubzika.befair.ui.atoms.BeFairTextField
 import dev.jakubzika.befair.ui.atoms.BrandMark
@@ -251,6 +253,18 @@ private fun AuthDivider() {
         HorizontalDivider(
             modifier = Modifier.weight(1f),
             color = MaterialTheme.colorScheme.outlineVariant
+        )
+    }
+}
+
+@Preview(backgroundColor = 0xFFFFFF, showBackground = true)
+@Composable
+private fun AuthTemplatePreview() {
+    BeFairTheme {
+        AuthTemplate(
+            onSubmit = { _, _ -> },
+            onContinueWithGoogle = {},
+            onContinueWithApple = {}
         )
     }
 }

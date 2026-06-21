@@ -10,6 +10,8 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import dev.jakubzika.befair.ui.atoms.BeFairTheme
 import dev.jakubzika.befair.ui.navigation.Items
 import dev.jakubzika.befair.ui.navigation.Overview
 import dev.jakubzika.befair.ui.navigation.Profile
@@ -50,6 +52,19 @@ fun BottomBar(
             onClick = onNavigateToProfile,
             icon = { Icon(Icons.Default.Person, contentDescription = profileLabel) },
             label = { Text(profileLabel) }
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun BottomBarPreview() {
+    BeFairTheme {
+        BottomBar(
+            currentRoute = Overview,
+            onNavigateToOverview = {},
+            onNavigateToItems = {},
+            onNavigateToProfile = {}
         )
     }
 }
