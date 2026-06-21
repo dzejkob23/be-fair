@@ -57,6 +57,11 @@ kotlin {
             implementation(libs.ktor.client.core)
             implementation(projects.core)
         }
+        
+        androidMain.dependencies {
+            implementation(compose.uiTooling)
+        }
+
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
