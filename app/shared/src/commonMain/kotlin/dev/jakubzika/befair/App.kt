@@ -11,7 +11,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
-import dev.jakubzika.befair.di.MobileAppContainer
+import dev.jakubzika.befair.di.AppContainer
 import dev.jakubzika.befair.ui.LocalAppContainer
 import dev.jakubzika.befair.ui.atoms.BeFairTheme
 import dev.jakubzika.befair.ui.navigation.AddNewItem
@@ -35,7 +35,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Preview
 fun App() {
     // DI container initialization
-    val appContainer = remember { MobileAppContainer() }
+    val appContainer = remember { AppContainer() }
     CompositionLocalProvider(LocalAppContainer provides appContainer) {
         // General app theme
         BeFairTheme {

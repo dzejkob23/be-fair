@@ -5,6 +5,9 @@ Guidance for AI agents working on UI components.
 # Rules
 When editing UI, preserve this structure and place new components at the lowest suitable layer.
 
+## Design system
+Read [`DESIGN.md`](app/shared/src/commonMain/kotlin/dev/jakubzika/befair/ui/DESIGN.md).
+
 ## Component layers
 - `atoms/` - Basic reusable UI pieces (`Button`, `Colors`, `Theme`, `Title`, etc.). Those components are unique.
 - `molecules/` - Are relatively simple groups of `atoms` functioning together as a unit.

@@ -57,5 +57,5 @@ The design component definition follows [atomic design](https://atomicdesign.bra
 
 For AI agents and developers:
 - [AGENTS.md](./AGENTS.md) — architecture, module ownership, boundaries, and safe-edit guidelines.
-- [DESIGN.md](./DESIGN.md) — design system tokens (colors, typography, spacing) and component patterns.
+- [DESIGN.md](app/shared/src/commonMain/kotlin/dev/jakubzika/befair/ui/DESIGN.md) — design system tokens (colors, typography, spacing) and component patterns.
 - [PRD.md](./PRD.md) — product requirements and feature scope.

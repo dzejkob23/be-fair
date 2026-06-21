@@ -5,12 +5,12 @@ import dev.jakubzika.befair.domain.repository.ProfileRepository
 
 /**
  * Mobile-specific dependency container. Holds mobile platform use-cases, repositories,
- * and controllers on top of the shared [AppContainer].
+ * and controllers on top of the shared [CoreContainer].
  */
-class MobileAppContainer(
-    val appContainer: AppContainer = AppContainer()
+class AppContainer(
+    val coreContainer: CoreContainer = CoreContainer()
 ) {
     val profileRepository: ProfileRepository by lazy {
-        ProfileRepositoryImpl(appContainer.httpClient)
+        ProfileRepositoryImpl(coreContainer.httpClient)
     }
 }

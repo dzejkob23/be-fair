@@ -1,8 +1,8 @@
 package dev.jakubzika.befair.ui
 
 import androidx.compose.runtime.staticCompositionLocalOf
-import dev.jakubzika.befair.di.MobileAppContainer
+import dev.jakubzika.befair.di.AppContainer
 
-val LocalAppContainer = staticCompositionLocalOf<MobileAppContainer> {
+val LocalAppContainer = staticCompositionLocalOf<AppContainer> {
     error("No AppContainer provided")
 }
