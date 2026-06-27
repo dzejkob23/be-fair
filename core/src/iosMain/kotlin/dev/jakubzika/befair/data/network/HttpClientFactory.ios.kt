@@ -1,15 +1,9 @@
 package dev.jakubzika.befair.data.network
 
+import dev.jakubzika.befair.data.storage.TokenStorage
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.darwin.Darwin
-import io.ktor.client.plugins.HttpTimeout
 
-actual fun createHttpClient(): HttpClient = HttpClient(Darwin) {
-    expectSuccess = true
-    install(HttpTimeout) {
-        requestTimeoutMillis = 15_000
-        connectTimeoutMillis = 15_000
-        socketTimeoutMillis = 15_000
-    }
+actual fun createHttpClient(tokenStorage: TokenStorage): HttpClient = HttpClient(Darwin) {
+    configureBeFair(tokenStorage)
 }
-

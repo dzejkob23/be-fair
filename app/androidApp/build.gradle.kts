@@ -33,6 +33,7 @@ android {
 
 dependencies {
     implementation(projects.app.shared)
+    implementation(projects.core)
     implementation(libs.androidx.activity.compose)
     debugImplementation(compose.uiTooling)
 }

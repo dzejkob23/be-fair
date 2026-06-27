@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -61,9 +62,11 @@ private val emailRegex = Regex("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AuthTemplate(
-    onSubmit: (name: String?, email: String) -> Unit,
+    onSubmit: (mode: AuthMode, email: String, password: String) -> Unit,
     onContinueWithGoogle: () -> Unit,
     onContinueWithApple: () -> Unit,
+    isLoading: Boolean = false,
+    serverError: String? = null,
     modifier: Modifier = Modifier
 ) {
     var mode by remember { mutableStateOf(AuthMode.SignIn) }
@@ -90,7 +93,7 @@ fun AuthTemplate(
         passwordError = nextPasswordError
 
         if (nextNameError == null && nextEmailError == null && nextPasswordError == null) {
-            onSubmit(if (isRegister) name.trim() else null, email)
+            onSubmit(mode, email.trim(), password)
         }
     }
 
@@ -134,6 +137,7 @@ fun AuthTemplate(
                 onValueChange = { name = it },
                 label = stringResource(Res.string.auth_name_label),
                 placeholder = stringResource(Res.string.auth_name_placeholder),
+                isEnabled = !isLoading,
                 isError = nameError != null,
                 errorMessage = nameError,
                 autofillContentType = ContentType.PersonFullName
@@ -144,6 +148,7 @@ fun AuthTemplate(
         EmailTextField(
             value = email,
             onValueChange = { email = it },
+            isEnabled = !isLoading,
             isError = emailError != null,
             errorMessage = emailError
         )
@@ -158,6 +163,7 @@ fun AuthTemplate(
             } else {
                 stringResource(Res.string.auth_password_placeholder_sign_in)
             },
+            isEnabled = !isLoading,
             isError = passwordError != null,
             errorMessage = passwordError,
             autofillContentType = if (mode == AuthMode.Register) {
@@ -166,6 +172,15 @@ fun AuthTemplate(
                 ContentType.Password
             }
         )
+
+        if (serverError != null) {
+            Spacer(modifier = Modifier.height(BeFairDimension.Spacing.sm))
+            Text(
+                text = serverError,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
 
         Spacer(modifier = Modifier.height(BeFairDimension.Spacing.lg))
 
@@ -176,8 +191,14 @@ fun AuthTemplate(
             } else {
                 stringResource(Res.string.auth_title_create_account)
             },
+            isEnabled = !isLoading,
             onClick = ::validateAndSubmit
         )
+
+        if (isLoading) {
+            Spacer(modifier = Modifier.height(BeFairDimension.Spacing.md))
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+        }
 
         Spacer(modifier = Modifier.height(BeFairDimension.Spacing.lg))
 
@@ -262,7 +283,7 @@ private fun AuthDivider() {
 private fun AuthTemplatePreview() {
     BeFairTheme {
         AuthTemplate(
-            onSubmit = { _, _ -> },
+            onSubmit = { _, _, _ -> },
             onContinueWithGoogle = {},
             onContinueWithApple = {}
         )

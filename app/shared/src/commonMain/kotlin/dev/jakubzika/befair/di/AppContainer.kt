@@ -1,6 +1,7 @@
 package dev.jakubzika.befair.di
 
 import dev.jakubzika.befair.data.repository.ProfileRepositoryImpl
+import dev.jakubzika.befair.domain.repository.AuthRepository
 import dev.jakubzika.befair.domain.repository.ProfileRepository
 
 /**
@@ -13,4 +14,6 @@ class AppContainer(
     val profileRepository: ProfileRepository by lazy {
         ProfileRepositoryImpl(coreContainer.httpClient)
     }
+
+    val authRepository: AuthRepository get() = coreContainer.authRepository
 }
