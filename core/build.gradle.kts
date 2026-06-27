@@ -27,9 +27,6 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.contentNegotiation)
-            implementation(libs.ktor.client.auth)
-            implementation(libs.ktor.serializationKotlinxJson)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -37,7 +34,6 @@ kotlin {
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.okhttp)
-            implementation(libs.androidx.security.crypto)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)

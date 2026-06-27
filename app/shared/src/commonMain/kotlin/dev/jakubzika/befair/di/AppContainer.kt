@@ -1,19 +1,37 @@
 package dev.jakubzika.befair.di
 
+import dev.jakubzika.befair.data.network.configureBeFair
+import dev.jakubzika.befair.data.network.createHttpClient
+import dev.jakubzika.befair.data.repository.AuthRepositoryImpl
 import dev.jakubzika.befair.data.repository.ProfileRepositoryImpl
+import dev.jakubzika.befair.data.storage.TokenStorage
 import dev.jakubzika.befair.domain.repository.AuthRepository
 import dev.jakubzika.befair.domain.repository.ProfileRepository
+import io.ktor.client.HttpClient
 
 /**
  * Mobile-specific dependency container. Holds mobile platform use-cases, repositories,
  * and controllers on top of the shared [CoreContainer].
+ *
+ * Auth, secure token storage, and the auth-configured HTTP client are mobile-only and so
+ * live here rather than in `core`.
  */
 class AppContainer(
     val coreContainer: CoreContainer = CoreContainer()
 ) {
+    // Secure, platform-backed token store (EncryptedSharedPreferences / Keychain).
+    val tokenStorage: TokenStorage by lazy { TokenStorage() }
+
+    // Client carrying JSON + bearer auth (with transparent refresh) for authenticated calls.
+    private val authHttpClient: HttpClient by lazy {
+        createHttpClient { configureBeFair(tokenStorage) }
+    }
+
+    val authRepository: AuthRepository by lazy {
+        AuthRepositoryImpl(authHttpClient, tokenStorage)
+    }
+
     val profileRepository: ProfileRepository by lazy {
         ProfileRepositoryImpl(coreContainer.httpClient)
     }
-
-    val authRepository: AuthRepository get() = coreContainer.authRepository
 }
