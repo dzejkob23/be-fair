@@ -42,6 +42,16 @@ flowchart
     server --> core
 ```
 
+## Module Placement — apply before creating or moving any file
+
+Decide placement explicitly *before* writing code, not after. The one rule:
+
+- **`core` only holds code consumed by more than one target.** In practice the server consumes only **DTOs, models, constants, and pure domain logic** from `core` — it has no Compose UI, no Ktor *client*, and no secure storage. So "shared with the server" almost always means *a data class*, not client infrastructure.
+- **If the server will never use it → `app/shared`** (Android/iOS). **If mobile will never use it → `server`.**
+- **Smell test:** if you must write a stub/no-op `actual` for a target that never uses the code (e.g. a JVM `TokenStorage` the server ignores), it's in the wrong module — move it to `app/shared`.
+
+Full table: [SKILL.md → Module Placement](./SKILL.md#module-placement--decide-this-first).
+
 ## Source Set Rules
 
 - Prefer `commonMain` for cross-platform logic.
@@ -76,8 +86,8 @@ All server-only code in `server/`. Shared logic with mobile goes in `core/`.
 
 No DI framework — uses manual dependency containers:
 
-- `core/.../di/AppContainer.kt` — shared instances (e.g. `httpClient`).
-- `app/shared/.../di/MobileAppContainer.kt` — mobile-specific instances, wraps `AppContainer`.
+- `core/.../di/CoreContainer.kt` — shared instances (e.g. `httpClient`).
+- `app/shared/.../di/AppContainer.kt` — mobile-specific instances, wraps `CoreContainer` (exposed as `coreContainer`).
 - Container provided to composables via `CompositionLocalProvider(LocalAppContainer provides container)`.
 - Accessed in composables via `LocalAppContainer.current`.
 
@@ -129,7 +139,7 @@ Use `gradle/libs.versions.toml` for versions and plugin aliases.
 - Place code in the correct module and source set.
 - Use `gradle/libs.versions.toml` for all dependency versions.
 - Follow atomic design for UI: atoms → molecules → organisms → templates → screens.
-- Wire new dependencies through the DI containers (`AppContainer` or `MobileAppContainer`).
+- Wire new dependencies through the DI containers (`CoreContainer` or `AppContainer`).
 - Validate changes with the smallest relevant test or build command.
 
 ### Ask first
@@ -143,6 +153,7 @@ Use `gradle/libs.versions.toml` for versions and plugin aliases.
 - Hard-code hex color values in composables.
 - Instantiate repositories or data sources directly in composables — use the DI container.
 - Add platform-specific code to `commonMain`.
+- Place mobile-only or client-only code (secure storage, Ktor client/auth config, Compose, anything that imports Android/iOS or only the app uses) in `core` — it is for genuinely multi-target code only.
 - Modify generated or build output directories.
 - Remove or rename existing public API without confirming no other module depends on it.
 - Skip the version catalog and add raw dependency coordinates in `build.gradle.kts`.
@@ -151,6 +162,7 @@ Use `gradle/libs.versions.toml` for versions and plugin aliases.
 
 - Make minimal, targeted edits; avoid unrelated refactors.
 - Keep module boundaries intact.
+- Before creating or moving a file, state its target **module + source set** and justify it by **which targets consume it**. If the answer is `core`, re-read [`core/AGENTS.md`](./core/AGENTS.md) first.
 - If requirements are ambiguous, state assumptions briefly in your response.
 - Update documentation when behavior or workflow changes.
 

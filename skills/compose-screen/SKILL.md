@@ -29,7 +29,7 @@ Decide what each layer needs before writing code:
 | Model | `app/shared/.../model/` | Data class for the domain entity (if new) |
 | Domain | `app/shared/.../domain/repository/` | Repository interface (if new data source) |
 | Data | `app/shared/.../data/repository/` | Repository implementation |
-| DI | `app/shared/.../di/MobileAppContainer.kt` | Wire the repository as a `lazy` property |
+| DI | `app/shared/.../di/AppContainer.kt` | Wire the repository as a `lazy` property |
 | UI | `app/shared/.../ui/<feature>/` | Screen composable + ViewModel/state |
 
 ### 2. Create the model (if needed)
@@ -69,11 +69,11 @@ class ItemRepositoryImpl(
 
 ### 5. Wire into DI container
 
-Add to `MobileAppContainer.kt`:
+Add to `AppContainer.kt`:
 
 ```kotlin
 val itemRepository: ItemRepository by lazy {
-    ItemRepositoryImpl(appContainer.httpClient)
+    ItemRepositoryImpl(coreContainer.httpClient)
 }
 ```
 
@@ -117,7 +117,7 @@ Add the screen as a destination in the app's navigation setup (Navigation 3).
 ### 8. Verify
 
 - [ ] Model in `model/`, domain interface in `domain/repository/`, impl in `data/repository/`
-- [ ] DI wired in `MobileAppContainer` with `by lazy`
+- [ ] DI wired in `AppContainer` with `by lazy`
 - [ ] No hard-coded colors or direct repository instantiation in composables
 - [ ] Build passes: `./gradlew :app:shared:testDebugUnitTest`
 

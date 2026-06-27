@@ -4,8 +4,8 @@ description: >
   Agent workflow recipes for the BeFair Kotlin Multiplatform project (Android, iOS, Ktor server).
   Use this skill when adding or modifying features — including new screens, domain models,
   repositories, use-cases, API endpoints, or shared core logic. Also use when unsure which
-  module, source set, or layer a change belongs in, or when wiring DI in AppContainer or
-  MobileAppContainer. Applies to all tasks touching app/shared, core, or server modules.
+  module, source set, or layer a change belongs in, or when wiring DI in CoreContainer or
+  AppContainer. Applies to all tasks touching app/shared, core, or server modules.
 compatibility: BeFair KMP project. Requires Gradle, Android Studio or Xcode for mobile targets.
 metadata:
   project: be-fair
@@ -37,8 +37,8 @@ When in doubt: if the server will never need it, it belongs in `app/shared`. If 
 
 **Read these before touching DI or the module structure.**
 
-- `AppContainer` is for cross-platform dependencies only (lives in `core`). Mobile-specific dependencies — repositories, use-cases — go in `MobileAppContainer` (`app/shared/di/`), not `AppContainer`.
-- `MobileAppContainer` holds a reference to `AppContainer` as `appContainer`. Access the shared `httpClient` via `appContainer.httpClient`, not by constructing a new one.
+- `CoreContainer` is for cross-platform dependencies only (lives in `core`). Mobile-specific dependencies — repositories, use-cases — go in `AppContainer` (`app/shared/di/`), not `CoreContainer`.
+- `AppContainer` holds a reference to `CoreContainer` as `coreContainer`. Access the shared `httpClient` via `coreContainer.httpClient`, not by constructing a new one.
 - The `domain/usecase/` directory does not exist yet. Create it when adding the first use-case.
 - The `ui/molecules/`, `ui/organisms/`, and `ui/templates/` directories do not exist yet. Create them when first needed.
 - `SERVER_PORT` is defined in `core/src/commonMain/kotlin/dev/jakubzika/befair/Constants.kt`. Never hardcode a port number.
@@ -57,13 +57,13 @@ For new tracked entities — e.g. `ClothingItem`, `Tool`, `WashEvent`.
   - Observable state: `val items: StateFlow<List<Name>>`.
   - Mutations: `suspend fun refresh()`, `suspend fun add(item: Name)`, etc.
 - [ ] **Repository implementation**: `app/shared/src/commonMain/kotlin/dev/jakubzika/befair/data/repository/<Name>RepositoryImpl.kt`
-  - Constructor-inject `HttpClient` only — get it from `AppContainer`, never construct it directly.
+  - Constructor-inject `HttpClient` only — get it from `CoreContainer` via `coreContainer.httpClient`, never construct it directly.
   - Back state with `private val _items = MutableStateFlow<List<Name>>(emptyList())`.
   - Expose as `override val items = _items.asStateFlow()`.
-- [ ] **Wire DI** in `MobileAppContainer`:
+- [ ] **Wire DI** in `AppContainer` (`app/shared`):
   ```kotlin
   val <name>Repository: <Name>Repository by lazy {
-      <Name>RepositoryImpl(appContainer.httpClient)
+      <Name>RepositoryImpl(coreContainer.httpClient)
   }
   ```
 - [ ] **Validate**: `./gradlew :app:shared:testDebugUnitTest`
@@ -79,7 +79,7 @@ For business logic that orchestrates multiple repositories or enforces domain ru
   - Constructor-inject only the repositories it needs.
   - Single entry point: `suspend operator fun invoke(…): Result`.
   - No UI imports, no `HttpClient` directly — delegate to repositories.
-- [ ] **Wire DI** in `MobileAppContainer`:
+- [ ] **Wire DI** in `AppContainer` (`app/shared`):
   ```kotlin
   val <name>UseCase: <Name>UseCase by lazy {
       <Name>UseCase(<name>Repository)
@@ -131,6 +131,6 @@ Use only when the logic is needed by both mobile and server.
 
 - [ ] **File**: `core/src/commonMain/kotlin/dev/jakubzika/befair/<package>/<Name>.kt`
 - [ ] **Platform split** (if needed): add `expect` in `commonMain`, `actual` in `androidMain`, `iosMain`, `jvmMain`. Follow the `HttpClientFactory` pattern.
-- [ ] **Wire DI**: add to `AppContainer` as `val <name>: <Name> by lazy { … }`.
+- [ ] **Wire DI**: add to `CoreContainer` as `val <name>: <Name> by lazy { … }`.
 - [ ] **Test**: prefer `commonTest`. Add platform-specific tests only when behavior differs per platform.
 - [ ] **Validate**: `./gradlew :core:testDebugUnitTest`
