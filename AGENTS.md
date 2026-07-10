@@ -7,7 +7,7 @@ Guidance for AI agents working in this repository.
 1. Read [`README.md`](./README.md) for human-oriented product and project context.
 2. Read [`PRD.md`](./PRD.md) for product requirements and feature scope.
 3. Use this file for implementation rules, architecture constraints, and safe edit workflow.
-4. For common step-by-step workflows (add a screen, add an endpoint, etc.) see [`SKILL.md`](./SKILL.md).
+4. For common step-by-step workflows (add a screen, add a repository, add an endpoint, add shared core logic) the harness surfaces on-demand **skills** in `.claude/skills/`. You don't need to open them manually — they activate when the task matches.
 5. When working inside a specific module, also read its scoped `AGENTS.md` listed in [Sub-Module Guidance](#sub-module-guidance).
 
 ## Project Snapshot
@@ -50,7 +50,15 @@ Decide placement explicitly *before* writing code, not after. The one rule:
 - **If the server will never use it → `app/shared`** (Android/iOS). **If mobile will never use it → `server`.**
 - **Smell test:** if you must write a stub/no-op `actual` for a target that never uses the code (e.g. a JVM `TokenStorage` the server ignores), it's in the wrong module — move it to `app/shared`.
 
-Full table: [SKILL.md → Module Placement](./SKILL.md#module-placement--decide-this-first).
+| What you're adding | Module | Source set |
+|---|---|---|
+| Shared between mobile **and** server | `core` | `commonMain` |
+| Mobile domain / data / model only | `app/shared` | `commonMain` |
+| UI components (composables) | `app/shared` | `commonMain` under `ui/` |
+| Server-only logic | `server` | `main` |
+| Platform-specific implementation | `core` or `app/shared` | `androidMain` / `iosMain` / `jvmMain` |
+
+When in doubt: if the server will never need it, it belongs in `app/shared`. If mobile will never need it, it belongs in `server`. Everything else goes in `core`.
 
 ## Source Set Rules
 
@@ -132,6 +140,9 @@ Use `gradle/libs.versions.toml` for versions and plugin aliases.
 - `expect fun getPlatform(): Platform` lives in `core` with `actual` implementations in `androidMain`, `iosMain`, and `jvmMain` — not in `app/shared`.
 - `HttpClientFactory` follows the same `expect`/`actual` pattern in `core` across all three platform source sets.
 - The iOS app is an Xcode project, not a Gradle target — `./gradlew` commands do not build or test iOS.
+- `SERVER_PORT` lives in `core/src/commonMain/kotlin/dev/jakubzika/befair/Constants.kt` — reference it by name, never hardcode a port.
+- Repositories expose observable state as `StateFlow<T>` backed by a private `MutableStateFlow`, and mutations as `suspend fun` — never return raw values from a repository.
+- `UserProfile` currently lives in `app/shared` (mobile-only), not `core` — move a model to `core` only once the server actually consumes it.
 
 ## Boundaries
 

@@ -8,7 +8,7 @@ description: >
 compatibility: Requires Kotlin, Compose Multiplatform, Material 3, and the BeFair project structure.
 metadata:
   author: be-fair
-  version: "1.0"
+  version: "2.0"
 ---
 
 ## When to use
@@ -17,6 +17,8 @@ Activate when:
 - Adding a new screen or destination to the app.
 - Creating a new feature that includes UI.
 - Building a detail/list/form view for a domain entity.
+
+For the data layer behind the screen (repository / use-case), see the `mobile-data-layer` skill.
 
 ## Step-by-step
 
@@ -30,96 +32,65 @@ Decide what each layer needs before writing code:
 | Domain | `app/shared/.../domain/repository/` | Repository interface (if new data source) |
 | Data | `app/shared/.../data/repository/` | Repository implementation |
 | DI | `app/shared/.../di/AppContainer.kt` | Wire the repository as a `lazy` property |
-| UI | `app/shared/.../ui/<feature>/` | Screen composable + ViewModel/state |
+| Template | `app/shared/.../ui/templates/` | Layout only, all data as parameters |
+| Screen | `app/shared/.../ui/screens/` | Reads state from DI, fills the template |
 
-### 2. Create the model (if needed)
+The `ui/molecules/`, `ui/organisms/`, and `ui/templates/` directories do not exist yet — create them the first time you need them.
 
-Place in `app/shared/src/commonMain/kotlin/dev/jakubzika/befair/model/`.
+### 2–5. Model, repository, DI
+
+If the screen needs a new data source, follow the `mobile-data-layer` skill for the model,
+domain interface, implementation, and DI wiring. Never instantiate repositories directly in composables.
+
+### 6. Create the template (layout only)
+
+Place in `ui/templates/<Name>Template.kt`.
+
+- All data comes in as parameters. **No repository access, no coroutines, no state collection.**
+- This keeps the layout previewable and testable in isolation.
+
+### 7. Create the screen (data + template)
+
+Place in `ui/screens/<Name>Screen.kt`. Access the DI container via CompositionLocal, collect
+state, and pass plain data down to the template:
 
 ```kotlin
-data class Item(
-    val id: String,
-    val name: String,
-    val price: Double,
-    val usageCount: Int,
-)
-```
-
-### 3. Create domain repository interface (if needed)
-
-Place in `app/shared/src/commonMain/kotlin/dev/jakubzika/befair/domain/repository/`.
-
-```kotlin
-interface ItemRepository {
-    suspend fun getItems(): List<Item>
+@Composable
+fun ItemListScreen() {
+    val container = LocalAppContainer.current
+    val items by container.itemRepository.items.collectAsState()
+    ItemListTemplate(items = items)
 }
 ```
 
-### 4. Create data repository implementation
-
-Place in `app/shared/src/commonMain/kotlin/dev/jakubzika/befair/data/repository/`.
-
-```kotlin
-class ItemRepositoryImpl(
-    private val httpClient: HttpClient,
-) : ItemRepository {
-    override suspend fun getItems(): List<Item> { /* ... */ }
-}
-```
-
-### 5. Wire into DI container
-
-Add to `AppContainer.kt`:
-
-```kotlin
-val itemRepository: ItemRepository by lazy {
-    ItemRepositoryImpl(coreContainer.httpClient)
-}
-```
-
-Never instantiate repositories directly in composables.
-
-### 6. Create the screen composable
-
-Place UI components at the lowest suitable atomic design layer:
+Place any reusable pieces at the lowest suitable atomic-design layer:
 
 - `ui/atoms/` — Basic reusable UI pieces (Button, Colors, Theme). Unique components.
 - `ui/molecules/` — Simple groups of atoms functioning together as a unit.
 - `ui/organisms/` — Complex components composed of molecules, atoms, and/or other organisms.
-- `ui/templates/` — Page-level layouts that place components and define content structure (e.g. `LoginTemplate`).
-- `ui/screens/` — Specific instances of templates filled with real data (e.g. `LoginScreen`, `HomeScreen`).
+- `ui/templates/` — Page-level layouts that place components and define content structure.
+- `ui/screens/` — Specific instances of templates filled with real data.
 
-For a new feature screen, create the template in `ui/templates/` and the screen in `ui/screens/`.
-Extract reusable pieces down to `atoms/`, `molecules/`, or `organisms/` as needed.
-
-Follow these design system rules:
+Follow the design system (see `ui/DESIGN.md`):
 - Colors: `MaterialTheme.colorScheme.*` (never hard-code hex)
 - Typography: `MaterialTheme.typography.*`
 - Spacing: `BeFairDimension.Spacing.*`
 - Corner radius: `BeFairDimension.Radius.*`
 - Cards: `elevation = 0.dp`, `containerColor = surfaceContainerLow`
 - TopAppBar: `containerColor = surface` (not `primary`)
+- User-facing text: define in `composeResources/values/strings.xml`, read via `stringResource(Res.string.<name>)` — never hardcode strings.
 
-Access the DI container via CompositionLocal:
+### 8. Register navigation
 
-```kotlin
-@Composable
-fun ItemListScreen() {
-    val container = LocalAppContainer.current
-    // Use container.itemRepository
-}
-```
+Add the new route to the `NavHost` in `App.kt` (Navigation 3).
 
-### 7. Register navigation
-
-Add the screen as a destination in the app's navigation setup (Navigation 3).
-
-### 8. Verify
+### 9. Verify
 
 - [ ] Model in `model/`, domain interface in `domain/repository/`, impl in `data/repository/`
 - [ ] DI wired in `AppContainer` with `by lazy`
-- [ ] No hard-coded colors or direct repository instantiation in composables
-- [ ] Build passes: `./gradlew :app:shared:testDebugUnitTest`
+- [ ] Template is layout-only; screen owns the data
+- [ ] No hard-coded colors/strings or direct repository instantiation in composables
+- [ ] Build passes: `./gradlew :app:androidApp:assembleDebug` (or `:app:shared:testDebugUnitTest`)
 
 ## Gotchas
 
