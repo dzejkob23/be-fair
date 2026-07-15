@@ -8,7 +8,9 @@ Read [`README.md`](./README.md) for human-oriented product and project context.
 
 ## Module Placement — apply before creating or moving any file
 
-Decide placement explicitly *before* writing code, not after. The one rule:
+`README.md` describes module purpose and high-level structure; use the rules below when you need an implementation-level placement decision.
+
+Decide placement explicitly *before* writing code, not after. The one hard rule:
 
 - **`core` only holds code consumed by more than one target.** In practice the server consumes only **DTOs, models, constants, and pure domain logic** from `core` — it has no Compose UI, no Ktor *client*, and no secure storage. So "shared with the server" almost always means *a data class*, not client infrastructure.
 - **If the server will never use it → `app/shared`** (Android/iOS). **If mobile will never use it → `server`.**
@@ -22,7 +24,7 @@ Decide placement explicitly *before* writing code, not after. The one rule:
 | Server-only logic | `server` | `main` |
 | Platform-specific implementation | `core` or `app/shared` | `androidMain` / `iosMain` / `jvmMain` |
 
-When in doubt: if the server will never need it, it belongs in `app/shared`. If mobile will never need it, it belongs in `server`. Everything else goes in `core`.
+When in doubt: if the server will never need it, it belongs in `app/shared`. If mobile will never need it, it belongs in `server`. Only genuinely shared multi-target code belongs in `core`.
 
 ## Source Set Rules
 
@@ -33,7 +35,7 @@ When in doubt: if the server will never need it, it belongs in `app/shared`. If 
 
 ## Dependency Injection
 
-No DI framework — uses manual dependency containers:
+Use the project's manual dependency containers:
 
 - `core/.../di/CoreContainer.kt` — shared instances (e.g. `httpClient`).
 - `app/shared/.../di/AppContainer.kt` — mobile-specific instances, wraps `CoreContainer` (exposed as `coreContainer`).
@@ -60,7 +62,6 @@ Use `gradle/libs.versions.toml` for versions and plugin aliases.
 - `LocalAppContainer` uses `staticCompositionLocalOf` and errors if no value is provided — every composable tree must be wrapped with the provider in `App.kt`.
 - `expect fun getPlatform(): Platform` lives in `core` with `actual` implementations in `androidMain`, `iosMain`, and `jvmMain` — not in `app/shared`.
 - `HttpClientFactory` follows the same `expect`/`actual` pattern in `core` across all three platform source sets.
-- The iOS app is an Xcode project, not a Gradle target — `./gradlew` commands do not build or test iOS.
 - `SERVER_PORT` lives in `core/src/commonMain/kotlin/dev/jakubzika/befair/Constants.kt` — reference it by name, never hardcode a port.
 - Repositories expose observable state as `StateFlow<T>` backed by a private `MutableStateFlow`, and mutations as `suspend fun` — never return raw values from a repository.
 - `UserProfile` currently lives in `app/shared` (mobile-only), not `core` — move a model to `core` only once the server actually consumes it.
@@ -68,9 +69,7 @@ Use `gradle/libs.versions.toml` for versions and plugin aliases.
 ## Boundaries
 
 ### Always do
-- Place code in the correct module and source set.
 - Use `gradle/libs.versions.toml` for all dependency versions.
-- Follow atomic design for UI: atoms → molecules → organisms → templates → screens.
 - Wire new dependencies through the DI containers (`CoreContainer` or `AppContainer`).
 - Validate changes with the smallest relevant test or build command.
 
