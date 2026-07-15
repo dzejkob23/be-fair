@@ -4,43 +4,7 @@ Guidance for AI agents working in this repository.
 
 ## Read This First
 
-1. Read [`README.md`](./README.md) for human-oriented product and project context.
-2. Read [`PRD.md`](./PRD.md) for product requirements and feature scope.
-3. Use this file for implementation rules, architecture constraints, and safe edit workflow.
-4. For common step-by-step workflows (add a screen, add a repository, add an endpoint, add shared core logic) the harness surfaces on-demand **skills** in `.claude/skills/`. You don't need to open them manually — they activate when the task matches.
-5. When working inside a specific module, also read its scoped `AGENTS.md` listed in [Sub-Module Guidance](#sub-module-guidance).
-
-## Project Snapshot
-
-- Project: **Be-Fair**
-- Package: `dev.jakubzika.befair`
-- Targets: Android, iOS, JVM server
-- Tech Stack:
-    - Kotlin Multiplatform
-    - Backend: Ktor server (Netty)
-    - Mobile UI: Compose Multiplatform (Material 3), Navigation 3
-    - Font: Inter (Compose resources)
-    - DI: Manual container (no framework)
-
-## Modules and Ownership
-
-Defined in `settings.gradle.kts`:
-
-| Module | Purpose | Depends on |
-|--------|---------|------------|
-| `app/shared` | Compose UI, mobile domain/data/model layers | `core` |
-| `app/androidApp` | Android entry point | `app/shared` |
-| `app/iosApp` | iOS entry point (Xcode) | `app/shared` |
-| `core` | Shared domain, data, model for all platforms | — |
-| `server` | Ktor server (Netty) | `core` |
-
-```mermaid
-flowchart
-    app/androidApp --> app/shared
-    app/iosApp --> app/shared
-    app/shared --> core
-    server --> core
-```
+Read [`README.md`](./README.md) for human-oriented product and project context.
 
 ## Module Placement — apply before creating or moving any file
 
@@ -67,29 +31,6 @@ When in doubt: if the server will never need it, it belongs in `app/shared`. If 
 - Use Kotlin `expect`/`actual` for platform abstractions.
 - Keep tests in `commonTest` when behavior is shared.
 
-## Software Architecture
-
-### Mobile (Clean Architecture)
-
-```
-app/shared/
-├── ui/           # Presentation — Compose screens and components (atomic design)
-│   ├── atoms/        # Basic reusable UI pieces (Button, Colors, Theme, Title). Unique components.
-│   ├── molecules/    # Simple groups of atoms functioning together as a unit.
-│   ├── organisms/    # Complex components composed of molecules, atoms, and/or other organisms.
-│   ├── templates/    # Page-level layouts that place components and define content structure (e.g. LoginTemplate).
-│   └── screens/      # Specific instances of templates filled with real data (e.g. LoginScreen, HomeScreen).
-├── domain/       # Use-cases (business logic)
-├── data/         # Repositories and controllers
-└── model/        # Model classes shared across layers
-```
-
-See [`app/shared/.../ui/AGENTS.md`](app/shared/src/commonMain/kotlin/dev/jakubzika/befair/ui/AGENTS.md) for the full UI component layer rules. When adding a new component, place it at the lowest suitable layer.
-
-### Server
-
-All server-only code in `server/`. Shared logic with mobile goes in `core/`.
-
 ## Dependency Injection
 
 No DI framework — uses manual dependency containers:
@@ -106,26 +47,6 @@ val repo = container.profileRepository
 
 // Wrong — instantiate directly in a composable
 val repo = ProfileRepositoryImpl(httpClient) // breaks DI, untestable
-```
-
-## Build, Run, and Test Commands
-
-```shell
-# Android
-./gradlew :app:androidApp:assembleDebug
-
-# Server (Ktor on Netty)
-./gradlew :server:run
-
-# iOS — open app/iosApp/ in Xcode and run from there
-
-# All tests
-./gradlew test
-
-# Module tests
-./gradlew :app:shared:testDebugUnitTest
-./gradlew :server:test
-./gradlew :core:testDebugUnitTest
 ```
 
 ## Version and Dependency Source of Truth

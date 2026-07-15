@@ -10,10 +10,11 @@ Be-Fair is application that allows you to track cost-effectiveness of your wared
 
 ## Tech Stack
 
-- **Frontend:** [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/) (Android, iOS)
-- **Backend:** [Ktor](https://ktor.io/) (Kotlin-based server)
-- **Shared Logic:** Kotlin Multiplatform (KMP)
-- **Database:** (Planned) Exposed DB for local caching, and backend database
+- Kotlin Multiplatform
+- Backend: [Ktor](https://ktor.io/) server (Netty)
+- Mobile UI: [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/) (Material 3), Navigation 3
+- Font: Inter (Compose resources)
+- DI: Manual container (no framework)
 
 ## Project Structure
 
@@ -23,9 +24,30 @@ Be-Fair is application that allows you to track cost-effectiveness of your wared
 - `core`: Shared business logic, models, and networking (all platforms).
 - `server`: The Ktor backend server.
 
+```mermaid
+flowchart
+    app/androidApp --> app/shared
+    app/iosApp --> app/shared
+    app/shared --> core
+    server --> core
+```
+
 ## Software Architecture
 Follow [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) rules.
 The design component definition follows [atomic design](https://atomicdesign.bradfrost.com/chapter-2/)
+
+```
+app/shared/
+├── ui/           # Presentation — Compose screens and components (atomic design)
+│   ├── atoms/        # Basic reusable UI pieces (Button, Colors, Theme, Title). Unique components.
+│   ├── molecules/    # Simple groups of atoms functioning together as a unit.
+│   ├── organisms/    # Complex components composed of molecules, atoms, and/or other organisms.
+│   ├── templates/    # Page-level layouts that place components and define content structure (e.g. LoginTemplate).
+│   └── screens/      # Specific instances of templates filled with real data (e.g. LoginScreen, HomeScreen).
+├── domain/       # Use-cases (business logic)
+├── data/         # Repositories and controllers
+└── model/        # Model classes shared across layers
+```
 
 ## Getting Started
 
@@ -42,6 +64,12 @@ The design component definition follows [atomic design](https://atomicdesign.bra
 2. Select the `app.androidApp` run configuration.
 3. Click "Run".
 
+OR run shell command:
+
+```shell
+./gradlew :app:androidApp:assembleDebug
+```
+
 #### iOS
 1. Open `app/iosApp/iosApp.xcodeproj` in Xcode.
 2. Select a simulator or physical device.
@@ -52,6 +80,23 @@ The design component definition follows [atomic design](https://atomicdesign.bra
 2. Navigate to the project.
 3. Run command `./gradlew :server:run`.
 4. Open browser with URL `http://0.0.0.0:8080`.
+
+OR run shell command:
+
+```shell
+./gradlew :server:run
+```
+
+#### Testing
+```shell
+# All tests
+./gradlew test
+
+# Module tests
+./gradlew :app:shared:testDebugUnitTest
+./gradlew :server:test
+./gradlew :core:testDebugUnitTest
+```
 
 ## Development Rules
 
