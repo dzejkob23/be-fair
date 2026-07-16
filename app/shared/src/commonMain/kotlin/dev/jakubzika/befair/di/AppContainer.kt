@@ -5,6 +5,7 @@ import dev.jakubzika.befair.data.network.createHttpClient
 import dev.jakubzika.befair.data.repository.AuthRepositoryImpl
 import dev.jakubzika.befair.data.repository.ProfileRepositoryImpl
 import dev.jakubzika.befair.data.storage.TokenStorage
+import dev.jakubzika.befair.data.storage.UserProfileStorage
 import dev.jakubzika.befair.domain.repository.AuthRepository
 import dev.jakubzika.befair.domain.repository.ProfileRepository
 import io.ktor.client.HttpClient
@@ -22,13 +23,16 @@ class AppContainer(
     // Secure, platform-backed token store (EncryptedSharedPreferences / Keychain).
     val tokenStorage: TokenStorage by lazy { TokenStorage() }
 
+    // Platform-backed user profile storage (EncryptedSharedPreferences / UserDefaults / Preferences).
+    val userProfileStorage: UserProfileStorage by lazy { UserProfileStorage() }
+
     // Client carrying JSON + bearer auth (with transparent refresh) for authenticated calls.
     private val authHttpClient: HttpClient by lazy {
         createHttpClient { configureBeFair(tokenStorage) }
     }
 
     val authRepository: AuthRepository by lazy {
-        AuthRepositoryImpl(authHttpClient, tokenStorage)
+        AuthRepositoryImpl(authHttpClient, tokenStorage, userProfileStorage)
     }
 
     val profileRepository: ProfileRepository by lazy {

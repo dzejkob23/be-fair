@@ -33,12 +33,12 @@ fun AuthScreen(
     AuthTemplate(
         isLoading = isLoading,
         serverError = serverError,
-        onSubmit = { mode, email, password ->
+        onSubmit = { mode, name, email, password ->
             serverError = null
             isLoading = true
             scope.launch {
                 val result = when (mode) {
-                    AuthMode.Register -> authRepository.register(email, password)
+                    AuthMode.Register -> authRepository.register(name!!, email, password)
                     AuthMode.SignIn -> authRepository.login(email, password)
                 }
                 isLoading = false

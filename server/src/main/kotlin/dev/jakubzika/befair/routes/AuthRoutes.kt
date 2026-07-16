@@ -42,10 +42,10 @@ fun Route.authRoutes(userRepository: UserRepository) {
 private fun Route.register(userRepository: UserRepository) = post("/register") {
     val request = call.receive<RegisterRequest>()
 
-    if (request.email.isBlank() || request.password.length < 8) {
+    if (request.email.isBlank() || request.password.length < 8 || request.name.isBlank()) {
         call.respond(
             HttpStatusCode.BadRequest,
-            GenericResponse(false, "Email is required and password must be at least 8 characters."),
+            GenericResponse(false, "Email and name are required, and password must be at least 8 characters."),
         )
         return@post
     }
@@ -61,7 +61,7 @@ private fun Route.register(userRepository: UserRepository) = post("/register") {
 
     val passwordHash = PasswordHasher.hash(request.password)
     if (existing == null) {
-        userRepository.create(request.email, passwordHash)
+        userRepository.create(request.email, request.name, passwordHash)
     } else {
         // Unverified re-registration: refresh the stored password before re-sending an OTP.
         userRepository.updatePasswordHash(request.email, passwordHash)
@@ -148,7 +148,7 @@ private fun Route.profile(userRepository: UserRepository) = authenticate("auth-j
             call.respond(HttpStatusCode.Unauthorized, GenericResponse(false, "Unknown user."))
             return@get
         }
-        call.respond(ProfileResponse(userId = user.id.toString(), email = user.email))
+        call.respond(ProfileResponse(userId = user.id.toString(), email = user.email, displayName = user.displayName))
     }
 }
 

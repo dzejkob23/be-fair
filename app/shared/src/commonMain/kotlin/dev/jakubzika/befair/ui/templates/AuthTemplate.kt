@@ -62,7 +62,7 @@ private val emailRegex = Regex("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AuthTemplate(
-    onSubmit: (mode: AuthMode, email: String, password: String) -> Unit,
+    onSubmit: (mode: AuthMode, name: String?, email: String, password: String) -> Unit,
     onContinueWithGoogle: () -> Unit,
     onContinueWithApple: () -> Unit,
     isLoading: Boolean = false,
@@ -93,7 +93,7 @@ fun AuthTemplate(
         passwordError = nextPasswordError
 
         if (nextNameError == null && nextEmailError == null && nextPasswordError == null) {
-            onSubmit(mode, email.trim(), password)
+            onSubmit(mode, if (isRegister) name.trim() else null, email.trim(), password)
         }
     }
 
@@ -283,7 +283,7 @@ private fun AuthDivider() {
 private fun AuthTemplatePreview() {
     BeFairTheme {
         AuthTemplate(
-            onSubmit = { _, _, _ -> },
+            onSubmit = { _, _, _, _ -> },
             onContinueWithGoogle = {},
             onContinueWithApple = {}
         )

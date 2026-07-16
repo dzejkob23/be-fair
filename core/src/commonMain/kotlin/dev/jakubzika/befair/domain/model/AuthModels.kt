@@ -11,6 +11,7 @@ import kotlinx.serialization.Serializable
 data class RegisterRequest(
     val email: String,
     val password: String,
+    val name: String,
 )
 
 @Serializable
@@ -50,4 +51,5 @@ data class GenericResponse(
 data class ProfileResponse(
     val userId: String,
     val email: String,
+    val displayName: String,
 )

@@ -9,10 +9,10 @@ import dev.jakubzika.befair.domain.model.ProfileResponse
  */
 interface AuthRepository {
 
-    /** Registers a new account and triggers an OTP email. Does not log the user in. */
-    suspend fun register(email: String, password: String): AuthResult<Unit>
+    /** Registers a new account with a display name and triggers an OTP email. Does not log the user in. */
+    suspend fun register(name: String, email: String, password: String): AuthResult<Unit>
 
-    /** Verifies the emailed OTP; on success persists the returned tokens. */
+    /** Verifies the emailed OTP; on success persists the returned tokens and caches the profile. */
     suspend fun verifyOtp(email: String, otp: String): AuthResult<Unit>
 
     /** Logs in a verified user; on success persists the returned tokens. */
@@ -21,7 +21,7 @@ interface AuthRepository {
     /** Calls the protected profile endpoint (proves Bearer injection). */
     suspend fun fetchProfile(): AuthResult<ProfileResponse>
 
-    /** Clears persisted tokens. */
+    /** Clears persisted tokens and profile data. */
     fun logout()
 
     /** Whether a token pair is currently stored. */

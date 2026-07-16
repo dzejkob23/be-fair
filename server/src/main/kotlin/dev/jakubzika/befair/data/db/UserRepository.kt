@@ -31,9 +31,10 @@ class UserRepository {
     }
 
     /** Inserts a new, unverified user and returns its generated id. */
-    suspend fun create(email: String, passwordHash: String): Int = dbQuery {
+    suspend fun create(email: String, displayName: String, passwordHash: String): Int = dbQuery {
         Users.insert {
             it[Users.email] = email
+            it[Users.displayName] = displayName
             it[Users.passwordHash] = passwordHash
             it[Users.isVerified] = false
         }[Users.id]
@@ -77,6 +78,7 @@ class UserRepository {
         id = row[Users.id],
         email = row[Users.email],
         passwordHash = row[Users.passwordHash],
+        displayName = row[Users.displayName],
         isVerified = row[Users.isVerified],
         otpCode = row[Users.otpCode],
         otpExpiresAt = row[Users.otpExpiresAt],

@@ -2,6 +2,7 @@ package dev.jakubzika.befair.data.repository
 
 import dev.jakubzika.befair.data.network.API_BASE_URL
 import dev.jakubzika.befair.data.storage.TokenStorage
+import dev.jakubzika.befair.data.storage.UserProfileStorage
 import dev.jakubzika.befair.domain.AuthResult
 import dev.jakubzika.befair.domain.model.GenericResponse
 import dev.jakubzika.befair.domain.model.LoginRequest
@@ -24,14 +25,15 @@ import kotlinx.serialization.json.Json
 class AuthRepositoryImpl(
     private val client: HttpClient,
     private val tokenStorage: TokenStorage,
+    private val userProfileStorage: UserProfileStorage,
 ) : AuthRepository {
 
     private val json = Json { ignoreUnknownKeys = true }
 
-    override suspend fun register(email: String, password: String): AuthResult<Unit> = safeCall {
+    override suspend fun register(name: String, email: String, password: String): AuthResult<Unit> = safeCall {
         val response: GenericResponse = client.post("$API_BASE_URL/api/auth/register") {
             contentType(ContentType.Application.Json)
-            setBody(RegisterRequest(email, password))
+            setBody(RegisterRequest(email, password, name))
         }.body()
         check(response.success) { response.message }
     }
@@ -42,6 +44,9 @@ class AuthRepositoryImpl(
             setBody(VerifyOtpRequest(email, otp))
         }.body()
         tokenStorage.saveTokens(tokens.accessToken, tokens.refreshToken)
+        // Fetch and cache the user profile after successful verification
+        val profile = fetchProfileInternal()
+        userProfileStorage.saveProfile(profile.displayName, profile.email)
     }
 
     override suspend fun login(email: String, password: String): AuthResult<Unit> = safeCall {
@@ -50,16 +55,24 @@ class AuthRepositoryImpl(
             setBody(LoginRequest(email, password))
         }.body()
         tokenStorage.saveTokens(tokens.accessToken, tokens.refreshToken)
+        val profile = fetchProfileInternal()
+        userProfileStorage.saveProfile(profile.displayName, profile.email)
     }
 
     override suspend fun fetchProfile(): AuthResult<ProfileResponse> = safeCall {
-        client.get("$API_BASE_URL/api/profile").body()
+        fetchProfileInternal()
     }
 
-    override fun logout() = tokenStorage.clearTokens()
+    override fun logout() {
+        tokenStorage.clearTokens()
+        userProfileStorage.clearProfile()
+    }
 
     override fun isLoggedIn(): Boolean =
         tokenStorage.getAccessToken() != null && tokenStorage.getRefreshToken() != null
+
+    private suspend fun fetchProfileInternal(): ProfileResponse =
+        client.get("$API_BASE_URL/api/profile").body()
 
     private suspend fun <T> safeCall(block: suspend () -> T): AuthResult<T> = try {
         AuthResult.Success(block())
