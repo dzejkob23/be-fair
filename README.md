@@ -81,12 +81,6 @@ OR run shell command:
 3. Run command `./gradlew :server:run`.
 4. Open browser with URL `http://0.0.0.0:8080`.
 
-OR run shell command:
-
-```shell
-./gradlew :server:run
-```
-
 #### Testing
 ```shell
 # All tests
