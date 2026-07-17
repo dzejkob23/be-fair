@@ -23,6 +23,14 @@
     <string name="auth_toggle_create_one">Create one</string>
     <string name="auth_divider_or">or</string>
 
+    <!-- OTP verification screen -->
+    <string name="otp_title">Verify your email</string>
+    <string name="otp_subtitle">Enter the 6-digit code we sent to %1$s.</string>
+    <string name="otp_field_label">Verification code</string>
+    <string name="otp_field_placeholder">123456</string>
+    <string name="otp_error_incomplete">Enter the 6-digit code.</string>
+    <string name="otp_submit">Verify</string>
+
     <!-- Bottom navigation -->
     <string name="bottom_bar_overview">Overview</string>
     <string name="bottom_bar_items">Items</string>

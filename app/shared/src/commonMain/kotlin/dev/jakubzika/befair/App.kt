@@ -19,12 +19,14 @@ import dev.jakubzika.befair.ui.navigation.AddNewItem
 import dev.jakubzika.befair.ui.navigation.ItemDetail
 import dev.jakubzika.befair.ui.navigation.Items
 import dev.jakubzika.befair.ui.navigation.Main
+import dev.jakubzika.befair.ui.navigation.OtpVerification
 import dev.jakubzika.befair.ui.navigation.Overview
 import dev.jakubzika.befair.ui.navigation.Profile
 import dev.jakubzika.befair.ui.navigation.Route
 import dev.jakubzika.befair.ui.navigation.SignIn
 import dev.jakubzika.befair.ui.screens.AuthScreen
 import dev.jakubzika.befair.ui.screens.MainScreen
+import dev.jakubzika.befair.ui.screens.OtpVerificationScreen
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.serializer
@@ -42,6 +44,7 @@ fun App() {
                     serializersModule = SerializersModule {
                         polymorphic(NavKey::class) {
                             subclass(SignIn::class, serializer())
+                            subclass(OtpVerification::class, serializer())
                             subclass(Main::class, serializer())
                             // Also include nested routes for serialization support if needed at top level
                             subclass(Overview::class, serializer())
@@ -62,21 +65,32 @@ fun App() {
                 onBack = { backStack.removeLast() },
                 entryProvider = entryProvider {
                     entry<SignIn> {
-                        AuthScreen(onAuthenticated = { backStack.add(Main) })
+                        AuthScreen(
+                            onNavigateToOtp = { email -> backStack.add(OtpVerification(email)) },
+                            onAuthenticated = { backStack.resetTo(Main) }
+                        )
+                    }
+                    entry<OtpVerification> { key ->
+                        OtpVerificationScreen(
+                            email = key.email,
+                            onVerified = { backStack.resetTo(Main) }
+                        )
                     }
                     entry<Main> {
                         MainScreen(
-                            onSignOut = {
-                                // Clear backstack and go to SignIn
-                                while (backStack.size > 0) {
-                                    backStack.removeLast()
-                                }
-                                backStack.add(SignIn)
-                            }
+                            onSignOut = { backStack.resetTo(SignIn) }
                         )
                     }
                 }
             )
         }
     }
+}
+
+/** Clears the entire back stack and makes [route] the only (root) destination. */
+private fun NavBackStack<Route>.resetTo(route: Route) {
+    while (isNotEmpty()) {
+        removeLast()
+    }
+    add(route)
 }

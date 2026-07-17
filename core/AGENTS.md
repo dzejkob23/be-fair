@@ -9,12 +9,14 @@ Read the root [`AGENTS.md`](../AGENTS.md) first for project-wide rules.
 Place logic here only when it is genuinely needed by more than one target.
 Mobile-only domain/data belongs in `app/shared`; server-only code belongs in `server`.
 
+**Does NOT belong in `core`** (put it in `app/shared`): secure token storage, Ktor *client* auth/refresh config, anything using `EncryptedSharedPreferences`/Keychain, Compose UI, and any client-only repository. A reliable smell: if a `core` target needs a throwaway `actual` that nothing consumes (e.g. a JVM stub for the server), the code is misplaced — move it to `app/shared`.
+
 ## Package Layout
 
 ```
 core/src/
   commonMain/kotlin/dev/jakubzika/befair/
-    di/AppContainer.kt          ← base dependency container
+    di/CoreContainer.kt         ← base dependency container
     data/network/
       HttpClientFactory.kt      ← expect declaration
     Constants.kt                ← shared constants (SERVER_PORT, etc.)
@@ -27,17 +29,17 @@ core/src/
 
 ## Dependency Container
 
-`AppContainer` is the root DI container — **not a framework, just a plain class**.
+`CoreContainer` is the root DI container — **not a framework, just a plain class**.
 
 Rules:
 - All properties use `by lazy` to defer construction until first use.
 - Add new cross-platform dependencies as `val` properties here.
-- Mobile-specific dependencies go in `MobileAppContainer` (`app/shared`), not here.
-- Never import Android or iOS symbols in `AppContainer`.
+- Mobile-specific dependencies go in `AppContainer` (`app/shared`), not here.
+- Never import Android or iOS symbols in `CoreContainer`.
 
 Example — adding a new shared service:
 ```kotlin
-class AppContainer {
+class CoreContainer {
     val httpClient: HttpClient by lazy { createHttpClient() }
     val myService: MyService by lazy { MyServiceImpl(httpClient) }
 }
