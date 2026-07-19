@@ -1,0 +1,41 @@
+name: Claude Code Developer Agent
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  run-claude:
+    # Only execute if you explicitly attach the 'claude' label to the issue
+    if: github.event.label.name == 'claude'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Allows Claude to see full git context if needed
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+
+      - name: Execute Claude Code Agent
+        uses: anthropics/claude-code-action-official@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            You are tasked with fixing or implementing the following issue:
+            
+            Issue Title: ${{ github.event.issue.title }}
+            Issue Body: ${{ github.event.issue.body }}
+            
+            Please read the AGENTS.md configuration file for guidance.
+            Create a new branch, write the code, verify the build passes using `./gradlew check`, commit the changes, and open a Pull Request.
