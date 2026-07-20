@@ -28,9 +28,11 @@ jobs:
           distribution: 'zulu'
 
       - name: Execute Claude Code Agent
-        uses: anthropics/claude-code-action-official@v1
+        uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+	  claude_args: |
+	    --model claude-sonet-5
           prompt: |
             You are tasked with fixing or implementing the following issue:
             
