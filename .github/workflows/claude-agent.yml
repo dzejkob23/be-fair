@@ -1,24 +1,35 @@
 name: Claude Code Developer Agent
 
 on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
   issues:
-    types: [labeled]
+    types: [opened, assigned, labeled]
+  pull_request_review:
+    types: [submitted]
 
 jobs:
-  run-claude:
-    # Only execute if you explicitly attach the 'claude' label to the issue
-    if: github.event.label.name == 'claude'
+  claude:
+    if: |
+      (github.event.label.name == 'claude') ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
     runs-on: ubuntu-latest
 
     permissions:
       contents: write
-      issues: write
       pull-requests: write
+      issues: write
       id-token: write
+      actions: read
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0 # Allows Claude to see full git context if needed
 
@@ -34,6 +45,8 @@ jobs:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           claude_args: |
             --model claude-sonnet-4-6
+            --max-turns 10
+            --system-prompt "Follow project coding standards. Ensure all new code has tests."
           prompt: |
             You are tasked with fixing or implementing the following issue:
             
