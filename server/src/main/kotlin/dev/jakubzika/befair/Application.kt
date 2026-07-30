@@ -1,5 +1,6 @@
 package dev.jakubzika.befair
 
+import dev.jakubzika.befair.auth.EmailService
 import dev.jakubzika.befair.auth.JwtConfig
 import dev.jakubzika.befair.data.db.DatabaseFactory
 import dev.jakubzika.befair.data.db.UserRepository
@@ -26,9 +27,11 @@ fun main() {
         .start(wait = true)
 }
 
-fun Application.module() {
+fun Application.module(emailService: EmailService? = null) {
     DatabaseFactory.init()
     val userRepository = UserRepository()
+    val apiKey = System.getenv("RESEND_API_KEY") ?: "re_dummy_api_key_for_testing"
+    val actualEmailService = emailService ?: EmailService(apiKey = apiKey)
 
     install(ContentNegotiation) {
         json()
@@ -61,6 +64,6 @@ fun Application.module() {
         get("/") {
             call.respondText("Ktor: ${Greeting().greet()}")
         }
-        authRoutes(userRepository)
+        authRoutes(userRepository, actualEmailService)
     }
 }

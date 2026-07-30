@@ -27,10 +27,10 @@ import io.ktor.server.routing.route
  * Mounts all authentication endpoints under /api. The OTP registration flow is:
  * register -> (OTP printed to console) -> verify -> tokens issued.
  */
-fun Route.authRoutes(userRepository: UserRepository) {
+fun Route.authRoutes(userRepository: UserRepository, emailService: EmailService) {
     route("/api") {
         route("/auth") {
-            register(userRepository)
+            register(userRepository, emailService)
             verify(userRepository)
             login(userRepository)
             refresh()
@@ -39,7 +39,7 @@ fun Route.authRoutes(userRepository: UserRepository) {
     }
 }
 
-private fun Route.register(userRepository: UserRepository) = post("/register") {
+private fun Route.register(userRepository: UserRepository, emailService: EmailService) = post("/register") {
     val request = call.receive<RegisterRequest>()
 
     if (request.email.isBlank() || request.password.length < 8 || request.name.isBlank()) {
@@ -69,7 +69,7 @@ private fun Route.register(userRepository: UserRepository) = post("/register") {
 
     val otp = OtpGenerator.generate()
     userRepository.setOtp(request.email, otp, OtpGenerator.expiresAt())
-    EmailService.sendOtpEmail(request.email, otp)
+    emailService.sendOtpEmail(request.email, otp)
 
     call.respond(GenericResponse(true, "Verification code sent to ${request.email}."))
 }

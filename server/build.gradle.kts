@@ -28,6 +28,11 @@ dependencies {
     implementation(libs.exposed.jdbc)
     implementation(libs.h2)
     implementation(libs.bcrypt)
+    implementation(libs.kotlinx.html)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.contentNegotiation)
     testImplementation(libs.ktor.serverTestHost)
     testImplementation(libs.kotlin.testJunit)
+    testImplementation(libs.ktor.client.mock)
 }
