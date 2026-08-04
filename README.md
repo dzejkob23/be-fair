@@ -1,6 +1,6 @@
 # Be-Fair
 
-Be-Fair is application that allows you to track cost-effectiveness of your waredrobe.
+Be-Fair is an application that allows you to track the cost-effectiveness and usage value of your wardrobe.
 
 ## Key Features (Planned)
 
@@ -34,28 +34,46 @@ flowchart
 
 ## Software Architecture
 Follow [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) rules.
-The design component definition follows [atomic design](https://atomicdesign.bradfrost.com/chapter-2/)
+The design component definition follows [atomic design](https://atomicdesign.bradfrost.com/chapter-2/).
 
-```
-app/shared/
-├── ui/           # Presentation — Compose screens and components (atomic design)
-│   ├── atoms/        # Basic reusable UI pieces (Button, Colors, Theme, Title). Unique components.
-│   ├── molecules/    # Simple groups of atoms functioning together as a unit.
-│   ├── organisms/    # Complex components composed of molecules, atoms, and/or other organisms.
-│   ├── templates/    # Page-level layouts that place components and define content structure (e.g. LoginTemplate).
-│   └── screens/      # Specific instances of templates filled with real data (e.g. LoginScreen, HomeScreen).
-├── domain/       # Use-cases (business logic)
-├── data/         # Repositories and controllers
-└── model/        # Model classes shared across layers
-```
+### Module/Package Layout Details
+
+#### `app/shared` (Compose Multiplatform & Mobile Logic)
+Located under `app/shared/src/commonMain/kotlin/dev/jakubzika/befair/`:
+- `ui/` — Presentation — Compose screens, navigation, and components (atomic design)
+  - `atoms/` — Basic reusable UI pieces (Button, Colors, Theme, Title). Unique components.
+  - `navigation/` — Core Navigation 3 components and route definitions.
+  - `organisms/` — Complex components composed of molecules, atoms, and/or other organisms.
+  - `templates/` — Page-level layouts that place components and define content structure (e.g., `LoginTemplate`).
+  - `screens/` — Specific instances of templates filled with real data (e.g., `LoginScreen`, `HomeScreen`).
+- `domain/` — Mobile domain logic
+  - `repository/` — Repository interfaces
+  - `model/` — Domain model classes
+- `data/` — Mobile data implementation
+  - `repository/` — Repository implementations
+  - `network/` — API clients / remote services
+  - `storage/` — Local secure storage (tokens, profile storage)
+- `di/` — Dependency injection container (`AppContainer`)
+
+#### `core` (Shared Multiplatform business/model logic)
+Located under `core/src/commonMain/kotlin/dev/jakubzika/befair/`:
+- `domain/model/` — Model classes shared between mobile client and Ktor server
+- `data/network/` — Shared networking setup (e.g., Ktor HttpClientFactory, API configurations)
+- `di/` — Dependency injection container (`CoreContainer`)
+
+#### `server` (Ktor Backend Server)
+Located under `server/src/main/kotlin/dev/jakubzika/befair/`:
+- `auth/` — Authentication and token validation utilities
+- `data/db/` — Database schemas, connections, and service transactions
+- `routes/` — Ktor routing and API endpoint implementations
 
 ## Getting Started
 
 ### Prerequisites
 
 - Android Studio (for Android and KMP)
-- Xcode (for iOS development)
-- JDK 17 or higher
+- Xcode (for iOS development, macOS only)
+- **JDK 21 or higher**
 
 ### Running the App
 
@@ -64,32 +82,34 @@ app/shared/
 2. Select the `app.androidApp` run configuration.
 3. Click "Run".
 
-OR run shell command:
+OR run the shell command:
 
 ```shell
 ./gradlew :app:androidApp:assembleDebug
 ```
 
 #### iOS
-1. Open `app/iosApp/iosApp.xcodeproj` in Xcode.
+1. Open `app/iosApp/iosApp.xcodeproj` in Xcode (requires macOS).
 2. Select a simulator or physical device.
 3. Click "Run".
 
 #### Backend
-1. Open Terminal app.
-2. Navigate to the project.
-3. Run command `./gradlew :server:run`.
-4. Open browser with URL `http://0.0.0.0:8080`.
+1. Open a terminal.
+2. Run the command:
+```shell
+./gradlew :server:run
+```
+3. Open a browser with the URL `http://localhost:8080` (or as defined by `SERVER_PORT` in constants).
 
 #### Testing
-```shell
-# All tests
-./gradlew test
+The project includes unit tests for the core shared logic and the backend server. Run specific module tests with:
 
-# Module tests
-./gradlew :app:shared:testDebugUnitTest
+```shell
+# Run Ktor server backend tests
 ./gradlew :server:test
-./gradlew :core:testDebugUnitTest
+
+# Run Shared library core tests (JVM target)
+./gradlew :core:jvmTest
 ```
 
 ## Development Rules
