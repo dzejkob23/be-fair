@@ -1,12 +1,5 @@
 package dev.jakubzika.befair.ui.organisms
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -32,6 +25,13 @@ import be_fair.app.shared.generated.resources.Res
 import be_fair.app.shared.generated.resources.bottom_bar_items
 import be_fair.app.shared.generated.resources.bottom_bar_overview
 import be_fair.app.shared.generated.resources.bottom_bar_profile
+import be_fair.app.shared.generated.resources.nav_items_active
+import be_fair.app.shared.generated.resources.nav_items_inactive
+import be_fair.app.shared.generated.resources.nav_overview_active
+import be_fair.app.shared.generated.resources.nav_overview_inactive
+import be_fair.app.shared.generated.resources.nav_profile_active
+import be_fair.app.shared.generated.resources.nav_profile_inactive
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -79,7 +79,9 @@ fun BottomBar(
             onClick = onNavigateToOverview,
             icon = {
                 Icon(
-                    imageVector = if (overviewSelected) Icons.Filled.Home else Icons.Outlined.Home,
+                    painter = painterResource(
+                        if (overviewSelected) Res.drawable.nav_overview_active else Res.drawable.nav_overview_inactive
+                    ),
                     contentDescription = overviewLabel
                 )
             },
@@ -102,7 +104,9 @@ fun BottomBar(
             onClick = onNavigateToItems,
             icon = {
                 Icon(
-                    imageVector = if (itemsSelected) Icons.AutoMirrored.Filled.List else Icons.AutoMirrored.Outlined.List,
+                    painter = painterResource(
+                        if (itemsSelected) Res.drawable.nav_items_active else Res.drawable.nav_items_inactive
+                    ),
                     contentDescription = itemsLabel
                 )
             },
@@ -125,7 +129,9 @@ fun BottomBar(
             onClick = onNavigateToProfile,
             icon = {
                 Icon(
-                    imageVector = if (profileSelected) Icons.Filled.Person else Icons.Outlined.Person,
+                    painter = painterResource(
+                        if (profileSelected) Res.drawable.nav_profile_active else Res.drawable.nav_profile_inactive
+                    ),
                     contentDescription = profileLabel
                 )
             },
