@@ -41,6 +41,7 @@
 
     <!-- Overview screen — empty state -->
     <string name="screen_overview_empty_welcome">Welcome, %1$s.</string>
+    <string name="screen_overview_empty_welcome_no_name">Welcome!</string>
     <string name="screen_overview_empty_description">Nothing to measure yet. Add your first piece of clothing or a tool, and %1$s works out what it really costs each time you use it.</string>
     <string name="screen_overview_empty_add_first_item">Add your first item</string>
     <string name="screen_overview_empty_how_it_works">How it works</string>

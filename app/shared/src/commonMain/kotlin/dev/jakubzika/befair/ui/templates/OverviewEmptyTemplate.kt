@@ -29,6 +29,7 @@ import be_fair.app.shared.generated.resources.screen_overview_empty_step_2_title
 import be_fair.app.shared.generated.resources.screen_overview_empty_step_3_description
 import be_fair.app.shared.generated.resources.screen_overview_empty_step_3_title
 import be_fair.app.shared.generated.resources.screen_overview_empty_welcome
+import be_fair.app.shared.generated.resources.screen_overview_empty_welcome_no_name
 import be_fair.app.shared.generated.resources.screen_overview_title
 import dev.jakubzika.befair.ui.atoms.BeFairDimension
 import dev.jakubzika.befair.ui.atoms.BeFairTheme
@@ -76,7 +77,11 @@ fun OverviewEmptyTemplate(
                 .padding(horizontal = BeFairDimension.Spacing.md)
         ) {
             EmptyStateCard(
-                welcomeText = stringResource(Res.string.screen_overview_empty_welcome, userName),
+                welcomeText = if (userName.isBlank()) {
+                    stringResource(Res.string.screen_overview_empty_welcome_no_name)
+                } else {
+                    stringResource(Res.string.screen_overview_empty_welcome, userName)
+                },
                 description = stringResource(Res.string.screen_overview_empty_description, appName),
                 onAddFirstItem = onAddFirstItem
             )
@@ -122,6 +127,18 @@ private fun OverviewEmptyTemplatePreview() {
     BeFairTheme {
         OverviewEmptyTemplate(
             userName = "Anna",
+            appName = "BeFair",
+            onAddFirstItem = {}
+        )
+    }
+}
+
+@Preview(backgroundColor = 0xF5F5F2, showBackground = true)
+@Composable
+private fun OverviewEmptyTemplateNoNamePreview() {
+    BeFairTheme {
+        OverviewEmptyTemplate(
+            userName = "",
             appName = "BeFair",
             onAddFirstItem = {}
         )
