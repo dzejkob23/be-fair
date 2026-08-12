@@ -1,38 +1,25 @@
 package dev.jakubzika.befair.ui.screens
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import dev.jakubzika.befair.ui.atoms.PrimaryButton
-import be_fair.app.shared.generated.resources.Res
-import be_fair.app.shared.generated.resources.screen_items_add_new_item
-import be_fair.app.shared.generated.resources.screen_items_go_to_item_detail
-import be_fair.app.shared.generated.resources.screen_items_title
-import org.jetbrains.compose.resources.stringResource
+import androidx.compose.runtime.setValue
+import dev.jakubzika.befair.ui.templates.ItemsTab
+import dev.jakubzika.befair.ui.templates.ItemsTemplate
 
+// No item source is wired up yet, so the Clothes/Tools switcher always shows
+// the "no data" hint per DESIGN.md — see OverviewScreen for the same pattern.
 @Composable
 fun ItemsScreen(
     onNavToItemDetailScreen: (id: String) -> Unit,
     onNavToAddNewItemScreen: () -> Unit
 ) {
-    val items = remember { listOf<Any>() }
+    var selectedTab by remember { mutableStateOf(ItemsTab.CLOTHES) }
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = stringResource(Res.string.screen_items_title))
-            PrimaryButton(
-                title = stringResource(Res.string.screen_items_go_to_item_detail),
-                onClick = { onNavToItemDetailScreen("2") }
-            )
-            PrimaryButton(title = stringResource(Res.string.screen_items_add_new_item), onClick = onNavToAddNewItemScreen)
-        }
-    }
+    ItemsTemplate(
+        selectedTab = selectedTab,
+        onTabSelected = { selectedTab = it },
+        onAddItem = onNavToAddNewItemScreen
+    )
 }
