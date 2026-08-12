@@ -54,9 +54,12 @@
     <string name="screen_overview_empty_data_stays_on_device">Your data stays on this device.</string>
 
     <!-- Items screen -->
-    <string name="screen_items_title">Items Screen</string>
-    <string name="screen_items_go_to_item_detail">Go to Item Detail (ID: 2)</string>
-    <string name="screen_items_add_new_item">Add New Item</string>
+    <string name="screen_items_title">Items</string>
+    <string name="screen_items_add_item">Add new item</string>
+    <string name="screen_items_tab_clothes">Clothes</string>
+    <string name="screen_items_tab_tools">Tools</string>
+    <string name="screen_items_empty_hint_clothes">Tap +1 to log a wear for today. Open an item for more.</string>
+    <string name="screen_items_empty_hint_tools">Tap +1 to log a use for today. Open an item for more.</string>
 
     <!-- Item detail screen -->
     <string name="screen_item_detail_title">Item Detail Screen (ID: %1$s)</string>
