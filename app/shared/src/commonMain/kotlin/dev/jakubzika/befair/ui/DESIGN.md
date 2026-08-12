@@ -199,6 +199,31 @@ components:
   segmented-control-active:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.ink}"
+  empty-state:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.md}"
+    padding: 32px
+  empty-state-mark:
+    textColor: "{colors.hairline-strong}"
+    height: 44px
+    width: 44px
+  empty-state-title:
+    typography: "{typography.headline-lg}"
+    textColor: "{colors.ink}"
+  empty-state-body:
+    typography: "{typography.body-md}"
+    textColor: "{colors.ink-2}"
+  step-item:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink}"
+    padding: 14px
+  step-number:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink-2}"
+    rounded: "{rounded.full}"
+    height: 22px
+    width: 22px
 ---
 
 # BeFair Design System
@@ -452,6 +477,19 @@ and a yellow-mixed border — informational only, never an error.
 **Tab bar.** Three-up, hairline top border, white surface. Inactive tabs are
 ink-3 Medium 11px; the active tab is ink Bold.
 
+**Empty state (no data).** The screen a freshly registered user lands on, before
+anything exists to measure. A white surface card, 4px radius, 32px top padding,
+centre-aligned: a 44px hairline-strong outline mark, a headline-lg welcome
+(personalised with the user's first name), one body-md line of ink-2 explaining
+what happens next, and a single full-width primary button. Followed by a
+numbered "How it works" list — `step-item` rows with a 22px circular
+hairline-outlined `step-number` — and a closing caption reassurance.
+
+> **Never fake a statistic.** With no items, the stats card, attention notice,
+> and activity list are *removed*, not zero-filled. "€0.00" or an empty chart
+> would imply a measurement that hasn't happened. The empty state's job is to
+> explain and offer the one action worth taking — nothing else.
+
 ### Design Tokens
 
 ```
@@ -469,6 +507,12 @@ components:
   notice:              { backgroundColor: "{colors.notice-tint}", textColor: "{colors.ink}", rounded: "{rounded.md}", padding: 12px }
   segmented-control:   { backgroundColor: "#E9E9E4", textColor: "{colors.ink-2}", rounded: "{rounded.md}", height: 36px, padding: 2px }
   segmented-control-active: { backgroundColor: "{colors.surface}", textColor: "{colors.ink}" }
+  empty-state:         { backgroundColor: "{colors.surface}", textColor: "{colors.ink}", rounded: "{rounded.md}", padding: 32px }
+  empty-state-mark:    { textColor: "{colors.hairline-strong}", height: 44px, width: 44px }
+  empty-state-title:   { typography: "{typography.headline-lg}", textColor: "{colors.ink}" }
+  empty-state-body:    { typography: "{typography.body-md}", textColor: "{colors.ink-2}" }
+  step-item:           { backgroundColor: "{colors.surface}", textColor: "{colors.ink}", padding: 14px }
+  step-number:         { backgroundColor: "{colors.surface}", textColor: "{colors.ink-2}", rounded: "{rounded.full}", height: 22px, width: 22px }
 ```
 
 ## Do's and Don'ts
@@ -492,3 +536,5 @@ components:
 - **Don't** mix the 4px content radius with sharp 0px corners in the same view.
 - **Don't** gamify — no confetti, badges, streak fireworks, or manipulative
   nudges. The numbers are the reward.
+- **Don't** fill an empty state with zeroed stats, placeholder charts, or sample
+  data. Remove the measurement and explain the next step instead.
