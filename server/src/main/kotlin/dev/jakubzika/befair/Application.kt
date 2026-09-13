@@ -42,7 +42,7 @@ fun Application.module() {
             realm = JwtConfig.REALM
             verifier(JwtConfig.verifier)
             validate { credential ->
-                if (JwtConfig.userIdClaim(credential.payload) != null) {
+                if (JwtConfig.isAccessToken(credential.payload) && JwtConfig.userIdClaim(credential.payload) != null) {
                     JWTPrincipal(credential.payload)
                 } else {
                     null
