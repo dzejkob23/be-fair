@@ -15,7 +15,7 @@ import org.jetbrains.exposed.v1.core.inList
 import org.jetbrains.exposed.v1.core.isNull
 import org.jetbrains.exposed.v1.core.less
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
-import org.jetbrains.exposed.v1.jdbc.insert
+import org.jetbrains.exposed.v1.jdbc.insertIgnore
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.jetbrains.exposed.v1.jdbc.update
@@ -66,25 +66,25 @@ class ItemRepository {
 
     /** Inserts [row], or returns the already-stored row for the same id unchanged. */
     suspend fun create(row: ItemRow): CreateResult<ItemRow> = dbQuery {
-        val existing = Items.selectAll().where { Items.id eq row.id }.map(::toItemRow).singleOrNull()
-        if (existing != null) {
-            CreateResult(existing, created = false)
-        } else {
-            Items.insert {
-                it[id] = row.id
-                it[userId] = row.userId
-                it[kind] = row.kind
-                it[name] = row.name
-                it[category] = row.category
-                it[priceCents] = row.priceCents
-                it[currency] = row.currency
-                it[purchasedOn] = row.purchasedOn
-                it[archivedAt] = row.archivedAt
-                it[deletedAt] = row.deletedAt
-                it[createdAt] = row.createdAt
-                it[updatedAt] = row.updatedAt
-            }
+        val result = Items.insertIgnore {
+            it[id] = row.id
+            it[userId] = row.userId
+            it[kind] = row.kind
+            it[name] = row.name
+            it[category] = row.category
+            it[priceCents] = row.priceCents
+            it[currency] = row.currency
+            it[purchasedOn] = row.purchasedOn
+            it[archivedAt] = row.archivedAt
+            it[deletedAt] = row.deletedAt
+            it[createdAt] = row.createdAt
+            it[updatedAt] = row.updatedAt
+        }
+        if (result.insertedCount > 0) {
             CreateResult(row, created = true)
+        } else {
+            val existing = Items.selectAll().where { Items.id eq row.id }.map(::toItemRow).single()
+            CreateResult(existing, created = false)
         }
     }
 
@@ -173,21 +173,21 @@ class ItemRepository {
     }
 
     suspend fun createEvent(row: ItemEventRow): CreateResult<ItemEventRow> = dbQuery {
-        val existing = ItemEvents.selectAll().where { ItemEvents.id eq row.id }.map(::toItemEventRow).singleOrNull()
-        if (existing != null) {
-            CreateResult(existing, created = false)
-        } else {
-            ItemEvents.insert {
-                it[id] = row.id
-                it[itemId] = row.itemId
-                it[type] = row.type
-                it[occurredAt] = row.occurredAt
-                it[costCents] = row.costCents
-                it[note] = row.note
-                it[createdAt] = row.createdAt
-                it[deletedAt] = row.deletedAt
-            }
+        val result = ItemEvents.insertIgnore {
+            it[id] = row.id
+            it[itemId] = row.itemId
+            it[type] = row.type
+            it[occurredAt] = row.occurredAt
+            it[costCents] = row.costCents
+            it[note] = row.note
+            it[createdAt] = row.createdAt
+            it[deletedAt] = row.deletedAt
+        }
+        if (result.insertedCount > 0) {
             CreateResult(row, created = true)
+        } else {
+            val existing = ItemEvents.selectAll().where { ItemEvents.id eq row.id }.map(::toItemEventRow).single()
+            CreateResult(existing, created = false)
         }
     }
 
