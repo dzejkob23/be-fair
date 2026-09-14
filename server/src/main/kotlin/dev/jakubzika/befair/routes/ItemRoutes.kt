@@ -223,7 +223,7 @@ private fun Route.logEvent(repo: ItemRepository) = post("/{id}/events") {
         return@post call.respond(HttpStatusCode.BadRequest, GenericResponse(false, "Validation failed.", errors))
     }
 
-    val (event, created) = repo.createEvent(
+    val (event, created) = repo.createEventAndTouch(
         ItemEventRow(
             id = request.id,
             itemId = id,
@@ -234,14 +234,12 @@ private fun Route.logEvent(repo: ItemRepository) = post("/{id}/events") {
             createdAt = now,
             deletedAt = null,
         ),
+        now,
     )
 
     if (event.itemId != id) {
         // id collision with an event on another item -- never leak that it exists.
         return@post call.respond(HttpStatusCode.NotFound, GenericResponse(false, "Item not found."))
-    }
-    if (created) {
-        repo.touchUpdatedAt(id, now)
     }
 
     val refreshedItem = repo.findOwned(id, userId) ?: item
@@ -283,8 +281,7 @@ private fun Route.deleteEvent(repo: ItemRepository) = delete("/{id}/events/{even
 
     if (event.deletedAt == null) {
         val now = System.currentTimeMillis()
-        repo.softDeleteEvent(eventId, now)
-        repo.touchUpdatedAt(item.id, now)
+        repo.softDeleteEventAndTouch(eventId, item.id, now)
     }
     call.respond(HttpStatusCode.NoContent)
 }

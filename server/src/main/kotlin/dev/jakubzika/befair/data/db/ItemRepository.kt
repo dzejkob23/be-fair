@@ -137,6 +137,41 @@ class ItemRepository {
 
     // ---- Item events ---------------------------------------------------------------------
 
+    /** Idempotent event insert + `updatedAt` bump in a single transaction. */
+    suspend fun createEventAndTouch(row: ItemEventRow, now: Long): CreateResult<ItemEventRow> = dbQuery {
+        val existing = ItemEvents.selectAll().where { ItemEvents.id eq row.id }.map(::toItemEventRow).singleOrNull()
+        if (existing != null) {
+            CreateResult(existing, created = false)
+        } else {
+            ItemEvents.insert {
+                it[id] = row.id
+                it[itemId] = row.itemId
+                it[type] = row.type
+                it[occurredAt] = row.occurredAt
+                it[costCents] = row.costCents
+                it[note] = row.note
+                it[createdAt] = row.createdAt
+                it[deletedAt] = row.deletedAt
+            }
+            Items.update({ Items.id eq row.itemId }) {
+                it[updatedAt] = now
+            }
+            CreateResult(row, created = true)
+        }
+    }
+
+    /** Soft-deletes an event and bumps the parent item's `updatedAt` atomically. */
+    suspend fun softDeleteEventAndTouch(eventId: String, itemId: String, now: Long) {
+        dbQuery {
+            ItemEvents.update({ ItemEvents.id eq eventId }) {
+                it[deletedAt] = now
+            }
+            Items.update({ Items.id eq itemId }) {
+                it[updatedAt] = now
+            }
+        }
+    }
+
     suspend fun createEvent(row: ItemEventRow): CreateResult<ItemEventRow> = dbQuery {
         val existing = ItemEvents.selectAll().where { ItemEvents.id eq row.id }.map(::toItemEventRow).singleOrNull()
         if (existing != null) {
