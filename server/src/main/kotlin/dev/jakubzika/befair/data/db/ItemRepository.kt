@@ -11,6 +11,7 @@ import org.jetbrains.exposed.v1.core.SortOrder
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.greater
+import org.jetbrains.exposed.v1.core.inList
 import org.jetbrains.exposed.v1.core.isNull
 import org.jetbrains.exposed.v1.core.less
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
@@ -193,6 +194,24 @@ class ItemRepository {
 
     /** Aggregates active events into the counters/derived costs shown on [ItemRow]. */
     suspend fun statsFor(item: ItemRow) = computeStats(item, activeEventsFor(item.id))
+
+    /** Fetches active events for all given item ids in a single query and computes stats per item. */
+    suspend fun batchStatsFor(items: List<ItemRow>): Map<String, ItemStats> {
+        val ids = items.filter { it.deletedAt == null }.map { it.id }
+        if (ids.isEmpty()) return emptyMap()
+        val eventsByItemId = activeEventsForItems(ids)
+        return ids.associateWith { id ->
+            val item = items.first { it.id == id }
+            computeStats(item, eventsByItemId[id] ?: emptyList())
+        }
+    }
+
+    private suspend fun activeEventsForItems(itemIds: List<String>): Map<String, List<ItemEventRow>> = dbQuery {
+        ItemEvents.selectAll()
+            .where { (ItemEvents.itemId inList itemIds) and ItemEvents.deletedAt.isNull() }
+            .map(::toItemEventRow)
+            .groupBy { it.itemId }
+    }
 
     private fun computeStats(
         item: ItemRow,

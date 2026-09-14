@@ -117,8 +117,9 @@ private fun Route.listItems(repo: ItemRepository) = get {
     val updatedSince = call.request.queryParameters["updatedSince"]?.toLongOrNull()
 
     val items = repo.listForUser(userId, kind?.name, includeArchived, updatedSince)
+    val statsByItemId = repo.batchStatsFor(items)
     val responses = items.map { row ->
-        if (row.deletedAt != null) row.toResponse(stats = null) else row.toResponse(repo.statsFor(row))
+        row.toResponse(statsByItemId[row.id])
     }
     call.respond(ItemListResponse(items = responses, serverTime = System.currentTimeMillis()))
 }
