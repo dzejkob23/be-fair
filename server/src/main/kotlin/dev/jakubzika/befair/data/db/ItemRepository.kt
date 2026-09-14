@@ -139,24 +139,24 @@ class ItemRepository {
 
     /** Idempotent event insert + `updatedAt` bump in a single transaction. */
     suspend fun createEventAndTouch(row: ItemEventRow, now: Long): CreateResult<ItemEventRow> = dbQuery {
-        val existing = ItemEvents.selectAll().where { ItemEvents.id eq row.id }.map(::toItemEventRow).singleOrNull()
-        if (existing != null) {
-            CreateResult(existing, created = false)
-        } else {
-            ItemEvents.insert {
-                it[id] = row.id
-                it[itemId] = row.itemId
-                it[type] = row.type
-                it[occurredAt] = row.occurredAt
-                it[costCents] = row.costCents
-                it[note] = row.note
-                it[createdAt] = row.createdAt
-                it[deletedAt] = row.deletedAt
-            }
+        val result = ItemEvents.insertIgnore {
+            it[id] = row.id
+            it[itemId] = row.itemId
+            it[type] = row.type
+            it[occurredAt] = row.occurredAt
+            it[costCents] = row.costCents
+            it[note] = row.note
+            it[createdAt] = row.createdAt
+            it[deletedAt] = row.deletedAt
+        }
+        if (result.insertedCount > 0) {
             Items.update({ Items.id eq row.itemId }) {
                 it[updatedAt] = now
             }
             CreateResult(row, created = true)
+        } else {
+            val existing = ItemEvents.selectAll().where { ItemEvents.id eq row.id }.map(::toItemEventRow).single()
+            CreateResult(existing, created = false)
         }
     }
 
@@ -169,25 +169,6 @@ class ItemRepository {
             Items.update({ Items.id eq itemId }) {
                 it[updatedAt] = now
             }
-        }
-    }
-
-    suspend fun createEvent(row: ItemEventRow): CreateResult<ItemEventRow> = dbQuery {
-        val result = ItemEvents.insertIgnore {
-            it[id] = row.id
-            it[itemId] = row.itemId
-            it[type] = row.type
-            it[occurredAt] = row.occurredAt
-            it[costCents] = row.costCents
-            it[note] = row.note
-            it[createdAt] = row.createdAt
-            it[deletedAt] = row.deletedAt
-        }
-        if (result.insertedCount > 0) {
-            CreateResult(row, created = true)
-        } else {
-            val existing = ItemEvents.selectAll().where { ItemEvents.id eq row.id }.map(::toItemEventRow).single()
-            CreateResult(existing, created = false)
         }
     }
 
