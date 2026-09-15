@@ -1,6 +1,7 @@
 package dev.jakubzika.befair.data.db
 
 import dev.jakubzika.befair.domain.model.ItemStats
+import java.sql.SQLIntegrityConstraintViolationException
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +16,7 @@ import org.jetbrains.exposed.v1.core.inList
 import org.jetbrains.exposed.v1.core.isNull
 import org.jetbrains.exposed.v1.core.less
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
-import org.jetbrains.exposed.v1.jdbc.insertIgnore
+import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.jetbrains.exposed.v1.jdbc.update
@@ -66,23 +67,23 @@ class ItemRepository {
 
     /** Inserts [row], or returns the already-stored row for the same id unchanged. */
     suspend fun create(row: ItemRow): CreateResult<ItemRow> = dbQuery {
-        val result = Items.insertIgnore {
-            it[id] = row.id
-            it[userId] = row.userId
-            it[kind] = row.kind
-            it[name] = row.name
-            it[category] = row.category
-            it[priceCents] = row.priceCents
-            it[currency] = row.currency
-            it[purchasedOn] = row.purchasedOn
-            it[archivedAt] = row.archivedAt
-            it[deletedAt] = row.deletedAt
-            it[createdAt] = row.createdAt
-            it[updatedAt] = row.updatedAt
-        }
-        if (result.insertedCount > 0) {
+        try {
+            Items.insert {
+                it[id] = row.id
+                it[userId] = row.userId
+                it[kind] = row.kind
+                it[name] = row.name
+                it[category] = row.category
+                it[priceCents] = row.priceCents
+                it[currency] = row.currency
+                it[purchasedOn] = row.purchasedOn
+                it[archivedAt] = row.archivedAt
+                it[deletedAt] = row.deletedAt
+                it[createdAt] = row.createdAt
+                it[updatedAt] = row.updatedAt
+            }
             CreateResult(row, created = true)
-        } else {
+        } catch (_: SQLIntegrityConstraintViolationException) {
             val existing = Items.selectAll().where { Items.id eq row.id }.map(::toItemRow).single()
             CreateResult(existing, created = false)
         }
@@ -130,22 +131,22 @@ class ItemRepository {
 
     /** Idempotent event insert + `updatedAt` bump in a single transaction. */
     suspend fun createEventAndTouch(row: ItemEventRow, now: Long): CreateResult<ItemEventRow> = dbQuery {
-        val result = ItemEvents.insertIgnore {
-            it[id] = row.id
-            it[itemId] = row.itemId
-            it[type] = row.type
-            it[occurredAt] = row.occurredAt
-            it[costCents] = row.costCents
-            it[note] = row.note
-            it[createdAt] = row.createdAt
-            it[deletedAt] = row.deletedAt
-        }
-        if (result.insertedCount > 0) {
+        try {
+            ItemEvents.insert {
+                it[id] = row.id
+                it[itemId] = row.itemId
+                it[type] = row.type
+                it[occurredAt] = row.occurredAt
+                it[costCents] = row.costCents
+                it[note] = row.note
+                it[createdAt] = row.createdAt
+                it[deletedAt] = row.deletedAt
+            }
             Items.update({ Items.id eq row.itemId }) {
                 it[updatedAt] = now
             }
             CreateResult(row, created = true)
-        } else {
+        } catch (_: SQLIntegrityConstraintViolationException) {
             val existing = ItemEvents.selectAll().where { ItemEvents.id eq row.id }.map(::toItemEventRow).single()
             CreateResult(existing, created = false)
         }
