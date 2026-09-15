@@ -126,15 +126,6 @@ class ItemRepository {
         }
     }
 
-    /** Bumps `updatedAt` without changing any other field, e.g. after a stats-affecting event. */
-    suspend fun touchUpdatedAt(id: String, now: Long) {
-        dbQuery {
-            Items.update({ Items.id eq id }) {
-                it[updatedAt] = now
-            }
-        }
-    }
-
     // ---- Item events ---------------------------------------------------------------------
 
     /** Idempotent event insert + `updatedAt` bump in a single transaction. */
@@ -196,14 +187,6 @@ class ItemRepository {
             .where { (ItemEvents.id eq eventId) and (ItemEvents.itemId eq itemId) }
             .map(::toItemEventRow)
             .singleOrNull()
-    }
-
-    suspend fun softDeleteEvent(id: String, now: Long) {
-        dbQuery {
-            ItemEvents.update({ ItemEvents.id eq id }) {
-                it[deletedAt] = now
-            }
-        }
     }
 
     // ---- Derived stats ---------------------------------------------------------------------
