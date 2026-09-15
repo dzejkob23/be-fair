@@ -14,6 +14,7 @@ import dev.jakubzika.befair.domain.model.LogEventRequest
 import dev.jakubzika.befair.domain.model.UpdateItemRequest
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.statement.bodyAsText
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
@@ -158,6 +159,233 @@ class ItemRoutesTest {
         assertEquals(HttpStatusCode.Created, first.status)
         assertEquals(HttpStatusCode.OK, second.status)
         assertEquals(request.name, second.body<ItemResponse>().name)
+    }
+
+    @Test
+    fun `create item with an over-long category returns 400 without leaking db internals`() = testApplication {
+        application { module() }
+        val client = jsonClient()
+        val token = authedUser()
+
+        val response = client.post("/api/items") {
+            bearer(token)
+            contentType(ContentType.Application.Json)
+            setBody(sampleCreateRequest().copy(category = "x".repeat(61)))
+        }
+
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+        val body = response.bodyAsText()
+        assertTrue(body.contains("category"))
+        assertFalse(body.contains("exceeds length"))
+    }
+
+    @Test
+    fun `create item with a non-uuid id returns 400`() = testApplication {
+        application { module() }
+        val client = jsonClient()
+        val token = authedUser()
+
+        val response = client.post("/api/items") {
+            bearer(token)
+            contentType(ContentType.Application.Json)
+            setBody(sampleCreateRequest(id = "x".repeat(50)))
+        }
+
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+        assertTrue(response.body<GenericResponse>().fields?.containsKey("id") == true)
+    }
+
+    @Test
+    fun `create item with an out-of-range purchase date returns 400`() = testApplication {
+        application { module() }
+        val client = jsonClient()
+        val token = authedUser()
+
+        val response = client.post("/api/items") {
+            bearer(token)
+            contentType(ContentType.Application.Json)
+            setBody(sampleCreateRequest().copy(purchasedOn = Long.MIN_VALUE))
+        }
+
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+        assertTrue(response.body<GenericResponse>().fields?.containsKey("purchasedOn") == true)
+    }
+
+    @Test
+    fun `create item with an unassigned currency code returns 400`() = testApplication {
+        application { module() }
+        val client = jsonClient()
+        val token = authedUser()
+
+        val response = client.post("/api/items") {
+            bearer(token)
+            contentType(ContentType.Application.Json)
+            setBody(sampleCreateRequest().copy(currency = "ZZZ"))
+        }
+
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+        assertTrue(response.body<GenericResponse>().fields?.containsKey("currency") == true)
+    }
+
+    @Test
+    fun `malformed json body returns 400 not 500`() = testApplication {
+        application { module() }
+        val client = jsonClient()
+        val token = authedUser()
+
+        val response = client.post("/api/items") {
+            bearer(token)
+            contentType(ContentType.Application.Json)
+            setBody("{\"id\":")
+        }
+
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+    }
+
+    @Test
+    fun `request body without a content type returns 415`() = testApplication {
+        application { module() }
+        val client = jsonClient()
+        val token = authedUser()
+
+        val response = client.post("/api/items") {
+            bearer(token)
+            setBody("{}")
+        }
+
+        assertEquals(HttpStatusCode.UnsupportedMediaType, response.status)
+    }
+
+    @Test
+    fun `update item with an over-long category returns 400`() = testApplication {
+        application { module() }
+        val client = jsonClient()
+        val token = authedUser()
+        val created = client.post("/api/items") {
+            bearer(token)
+            contentType(ContentType.Application.Json)
+            setBody(sampleCreateRequest())
+        }.body<ItemResponse>()
+
+        val response = client.patch("/api/items/${created.id}") {
+            bearer(token)
+            contentType(ContentType.Application.Json)
+            setBody(UpdateItemRequest(category = "x".repeat(61)))
+        }
+
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+        assertTrue(response.body<GenericResponse>().fields?.containsKey("category") == true)
+    }
+
+    @Test
+    fun `malformed updatedSince cursor returns 400`() = testApplication {
+        application { module() }
+        val client = jsonClient()
+        val token = authedUser()
+
+        val response = client.get("/api/items?updatedSince=abc") { bearer(token) }
+
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+    }
+
+    @Test
+    fun `malformed event limit returns 400`() = testApplication {
+        application { module() }
+        val client = jsonClient()
+        val token = authedUser()
+        val created = client.post("/api/items") {
+            bearer(token)
+            contentType(ContentType.Application.Json)
+            setBody(sampleCreateRequest())
+        }.body<ItemResponse>()
+
+        val response = client.get("/api/items/${created.id}/events?limit=abc") { bearer(token) }
+
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+    }
+
+    @Test
+    fun `log event with a negative cost returns 400`() = testApplication {
+        application { module() }
+        val client = jsonClient()
+        val token = authedUser()
+        val created = client.post("/api/items") {
+            bearer(token)
+            contentType(ContentType.Application.Json)
+            setBody(sampleCreateRequest())
+        }.body<ItemResponse>()
+
+        val response = client.post("/api/items/${created.id}/events") {
+            bearer(token)
+            contentType(ContentType.Application.Json)
+            setBody(
+                LogEventRequest(
+                    id = UUID.randomUUID().toString(),
+                    type = ItemEventType.REPAIR,
+                    costCents = -100,
+                ),
+            )
+        }
+
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+        assertTrue(response.body<GenericResponse>().fields?.containsKey("costCents") == true)
+    }
+
+    @Test
+    fun `log event with a non-uuid id returns 400`() = testApplication {
+        application { module() }
+        val client = jsonClient()
+        val token = authedUser()
+        val created = client.post("/api/items") {
+            bearer(token)
+            contentType(ContentType.Application.Json)
+            setBody(sampleCreateRequest())
+        }.body<ItemResponse>()
+
+        val response = client.post("/api/items/${created.id}/events") {
+            bearer(token)
+            contentType(ContentType.Application.Json)
+            setBody(LogEventRequest(id = "x".repeat(50), type = ItemEventType.WEAR))
+        }
+
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+        assertTrue(response.body<GenericResponse>().fields?.containsKey("id") == true)
+    }
+
+    @Test
+    fun `event pagination keeps same-millisecond events across pages`() = testApplication {
+        application { module() }
+        val client = jsonClient()
+        val token = authedUser()
+        val created = client.post("/api/items") {
+            bearer(token)
+            contentType(ContentType.Application.Json)
+            setBody(sampleCreateRequest())
+        }.body<ItemResponse>()
+        val occurredAt = System.currentTimeMillis() - 1_000
+        val loggedIds = (1..3).map {
+            client.post("/api/items/${created.id}/events") {
+                bearer(token)
+                contentType(ContentType.Application.Json)
+                setBody(
+                    LogEventRequest(
+                        id = UUID.randomUUID().toString(),
+                        type = ItemEventType.WEAR,
+                        occurredAt = occurredAt,
+                    ),
+                )
+            }.body<EventLoggedResponse>().event.id
+        }
+
+        val firstPage = client.get("/api/items/${created.id}/events?limit=2") { bearer(token) }
+            .body<ItemEventListResponse>().events
+        val cursor = firstPage.last()
+        val secondPage = client.get(
+            "/api/items/${created.id}/events?limit=2&before=${cursor.occurredAt}&beforeId=${cursor.id}",
+        ) { bearer(token) }.body<ItemEventListResponse>().events
+
+        assertEquals(2, firstPage.size)
+        assertEquals(loggedIds.sorted(), (firstPage + secondPage).map { it.id }.sorted())
     }
 
     @Test

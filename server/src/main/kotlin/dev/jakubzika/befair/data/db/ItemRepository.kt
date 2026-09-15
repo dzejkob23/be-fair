@@ -1,7 +1,7 @@
 package dev.jakubzika.befair.data.db
 
 import dev.jakubzika.befair.domain.model.ItemStats
-import java.sql.SQLIntegrityConstraintViolationException
+import java.sql.SQLException
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import kotlinx.coroutines.Dispatchers
@@ -11,10 +11,11 @@ import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.SortOrder
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
-import org.jetbrains.exposed.v1.core.greater
+import org.jetbrains.exposed.v1.core.greaterEq
 import org.jetbrains.exposed.v1.core.inList
 import org.jetbrains.exposed.v1.core.isNull
 import org.jetbrains.exposed.v1.core.less
+import org.jetbrains.exposed.v1.core.or
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
 import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.selectAll
@@ -23,6 +24,17 @@ import org.jetbrains.exposed.v1.jdbc.update
 
 /** Result of an idempotent create: [created] is false when the id already existed. */
 data class CreateResult<T>(val row: T, val created: Boolean)
+
+/**
+ * True when this failure is a duplicate-key violation.
+ *
+ * Exposed wraps every driver error in `ExposedSQLException`, so catching
+ * `SQLIntegrityConstraintViolationException` by type never matches -- the SQL state has to be
+ * inspected instead. Class `23` is "integrity constraint violation" (`23505` = duplicate key).
+ */
+private fun SQLException.isUniqueViolation(): Boolean =
+    generateSequence<Throwable>(this) { it.cause }
+        .any { it is SQLException && it.sqlState?.startsWith("23") == true }
 
 /**
  * Data-access layer for [Items] and [ItemEvents]. Each call runs a blocking Exposed
@@ -49,7 +61,9 @@ class ItemRepository {
     ): List<ItemRow> = dbQuery {
         val conditions = mutableListOf<Op<Boolean>>(Items.userId eq userId)
         if (updatedSince != null) {
-            conditions += Items.updatedAt greater updatedSince
+            // Inclusive: a write committing in the same millisecond the caller's cursor was minted
+            // may have been invisible to that read. Re-sending it is harmless, dropping it is not.
+            conditions += Items.updatedAt greaterEq updatedSince
         } else {
             conditions += Items.deletedAt.isNull()
             if (!includeArchived) {
@@ -83,7 +97,8 @@ class ItemRepository {
                 it[updatedAt] = row.updatedAt
             }
             CreateResult(row, created = true)
-        } catch (_: SQLIntegrityConstraintViolationException) {
+        } catch (e: SQLException) {
+            if (!e.isUniqueViolation()) throw e
             val existing = Items.selectAll().where { Items.id eq row.id }.map(::toItemRow).single()
             CreateResult(existing, created = false)
         }
@@ -146,7 +161,8 @@ class ItemRepository {
                 it[updatedAt] = now
             }
             CreateResult(row, created = true)
-        } catch (_: SQLIntegrityConstraintViolationException) {
+        } catch (e: SQLException) {
+            if (!e.isUniqueViolation()) throw e
             val existing = ItemEvents.selectAll().where { ItemEvents.id eq row.id }.map(::toItemEventRow).single()
             CreateResult(existing, created = false)
         }
@@ -164,14 +180,25 @@ class ItemRepository {
         }
     }
 
-    suspend fun listEvents(itemId: String, limit: Int, before: Long?): List<ItemEventRow> = dbQuery {
+    /**
+     * One page of an item's active events, newest first. The next page is fetched with
+     * `before = last.occurredAt` **and** `beforeId = last.id`: `occurredAt` alone is not unique,
+     * so a page boundary inside a group of same-millisecond events would otherwise skip the rest
+     * of that group.
+     */
+    suspend fun listEvents(itemId: String, limit: Int, before: Long?, beforeId: String?): List<ItemEventRow> = dbQuery {
         val conditions = mutableListOf<Op<Boolean>>(ItemEvents.itemId eq itemId, ItemEvents.deletedAt.isNull())
         if (before != null) {
-            conditions += ItemEvents.occurredAt less before
+            conditions += if (beforeId != null) {
+                (ItemEvents.occurredAt less before) or
+                    ((ItemEvents.occurredAt eq before) and (ItemEvents.id less beforeId))
+            } else {
+                ItemEvents.occurredAt less before
+            }
         }
         ItemEvents.selectAll()
             .where { conditions.reduce { acc, condition -> acc and condition } }
-            .orderBy(ItemEvents.occurredAt to SortOrder.DESC)
+            .orderBy(ItemEvents.occurredAt to SortOrder.DESC, ItemEvents.id to SortOrder.DESC)
             .limit(limit)
             .map(::toItemEventRow)
     }
@@ -197,12 +224,11 @@ class ItemRepository {
 
     /** Fetches active events for all given item ids in a single query and computes stats per item. */
     suspend fun batchStatsFor(items: List<ItemRow>): Map<String, ItemStats> {
-        val ids = items.filter { it.deletedAt == null }.map { it.id }
-        if (ids.isEmpty()) return emptyMap()
-        val eventsByItemId = activeEventsForItems(ids)
-        return ids.associateWith { id ->
-            val item = items.first { it.id == id }
-            computeStats(item, eventsByItemId[id] ?: emptyList())
+        val active = items.filter { it.deletedAt == null }
+        if (active.isEmpty()) return emptyMap()
+        val eventsByItemId = activeEventsForItems(active.map { it.id })
+        return active.associate { item ->
+            item.id to computeStats(item, eventsByItemId[item.id].orEmpty())
         }
     }
 
